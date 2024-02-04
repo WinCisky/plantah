@@ -41,8 +41,17 @@ jobs:
       shell: bash
       run: cmake --install build --config Release
 
+    - name: List files
+      run: ls -R build
+
+    - name: List files 2
+      run: ls -R .
+
+    - name: Zip bin folder
+      run: zip -r plantah.zip build/bin
+
     - name: Archive build artifacts
       uses: actions/upload-artifact@v4
       with:
         name: ${{ matrix.platform.name }}-${{ matrix.config.name }}-build-bin
-        path: build/bin
+        path: plantah.zip
