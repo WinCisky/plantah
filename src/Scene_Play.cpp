@@ -28,7 +28,7 @@ void Scene_Play::init(const std::string & levelPath)
     m_gridText.setCharacterSize(12);
     m_gridText.setFont(m_game->assets().getFont("Tech"));
 
-    loadLevel(levelPath);
+    // loadLevel(levelPath);
 }
 
 Vec2 Scene_Play::gridToMidPixel(float gridX, float gridY, std::shared_ptr<Entity> entity)
@@ -115,11 +115,11 @@ void Scene_Play::update()
 
     // TODO: implement pause functionality
 
-    sMovement();
-    sLifespan();
-    sCollision();
-    sAnimation();
-    sRender();
+    // sMovement();
+    // sLifespan();
+    // sCollision();
+    // sAnimation();
+    // sRender();
 }
 
 void Scene_Play::sMovement()
@@ -169,6 +169,11 @@ void Scene_Play::sDoAction(const Action & action)
     {
 
     }
+}
+
+void Scene_Play::sDoActionMouse(const Action & action, const Vec2 & pos)
+{
+
 }
 
 void Scene_Play::sAnimation()

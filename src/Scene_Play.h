@@ -13,6 +13,9 @@ class Scene_Play : public Scene
         float X, Y, CX, CY, SPEED, MAXSPEED, JUMP, GRAVITY;
         std::string WEAPON;
     };
+    
+public:
+    Scene_Play(GameEngine * gameEngine, const std::string & levelPath);
 
 protected:
 
@@ -25,7 +28,6 @@ protected:
     const Vec2 m_gridSize = { 64, 64 };
     sf::Text m_gridText;
 
-    Scene_Play(GameEngine* gameEngine, const std::string& levelPath);
     void init(const std::string & levelPath);
     Vec2 gridToMidPixel(float gridX, float gridY, std::shared_ptr<Entity> entity);
     void loadLevel(const std::string & filename); 
@@ -35,7 +37,8 @@ protected:
     void sMovement();
     void sLifespan();
     void sCollision();
-    void sDoAction(const Action& action);
+    void sDoAction(const Action & action);
+    void sDoActionMouse(const Action & action, const Vec2 & pos);
     void sAnimation();
     void onEnd();
     void sRender();
