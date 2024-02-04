@@ -16,7 +16,7 @@ jobs:
         - { name: Linux GCC,        os: ubuntu-latest }
         # - { name: Linux Clang,    os: ubuntu-latest, flags: -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ }
         # - { name: macOS,          os: macos-latest  }
-        - { name: macOS M1,         os: macos-11  }
+        # - { name: macOS M1,       os: macos-11  }
         config:
         # - { name: Shared, flags: -DBUILD_SHARED_LIBS=TRUE }
         - { name: Static, flags: -DBUILD_SHARED_LIBS=FALSE }
@@ -42,14 +42,14 @@ jobs:
       run: cmake --install build --config Release
 
     - name: Zip bin folder and assets folder
-      if: runner.os != 'Windows'
-      run: zip -r plantah.zip build/bin assets
+      run: |
+        cd build/bin && zip -r ../../plantah.zip * && cd ../..
+        cd assets && zip -r ../plantah.zip * && cd ..
 
     - name: Zip bin folder and assets folder
-      if: runner.os == 'Windows'
       shell: pwsh
       run: |
-        Compress-Archive -Path build/bin, assets -DestinationPath plantah.zip
+        Get-ChildItem -Path build/bin/*, assets/* | Compress-Archive -DestinationPath plantah.zip -CompressionLevel Optimal -Force -FlattenPaths
 
     - name: Archive build artifacts
       uses: actions/upload-artifact@v4
