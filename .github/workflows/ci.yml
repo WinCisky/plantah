@@ -41,21 +41,14 @@ jobs:
       shell: bash
       run: cmake --install build --config Release
 
-    - name: Zip bin folder and assets folder
-      if: runner.os != 'Windows'
-      run: |
-        cd build/bin && zip -r ../../plantah.zip * && cd ../..
-        zip -r plantah.zip assets
-
-    - name: Zip bin folder and assets folder
-      if: runner.os == 'Windows'
-      shell: pwsh
-      run: |
-        Compress-Archive -Path build/bin/* -DestinationPath plantah.zip -CompressionLevel Optimal -Force
-        Compress-Archive -Path assets -DestinationPath plantah.zip -Update
-
     - name: Archive build artifacts
       uses: actions/upload-artifact@v4
       with:
         name: ${{ matrix.platform.name }}-${{ matrix.config.name }}-build-bin
         path: plantah.zip
+
+    - name: Archive assets folder
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ matrix.platform.name }}-${{ matrix.config.name }}-additional-folder
+        path: assets
