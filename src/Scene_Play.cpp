@@ -10,7 +10,7 @@
 Scene_Play::Scene_Play(GameEngine * gameEngine, const std::string & levelPath)
     : Scene(gameEngine)
     , m_levelPath(levelPath)
-    , m_gridText(m_game->assets().getFont("Tech"), "", 12)
+    , m_gridText(m_game->assets().getFont("assets/tech.ttf"), "", 12)
 {
     init(m_levelPath);
 }
@@ -26,7 +26,7 @@ void Scene_Play::init(const std::string & levelPath)
     // TODO: Register all other fameplay Actions
 
     m_gridText.setCharacterSize(12);
-    m_gridText.setFont(m_game->assets().getFont("Tech"));
+    m_gridText.setFont(m_game->assets().getFont("assets/tech.ttf"));
 
     // loadLevel(levelPath);
 }
@@ -196,6 +196,7 @@ void Scene_Play::sRender()
     // color the background darker so you know that the game is paused
     if (!m_paused) { m_game->window().clear(sf::Color(100, 100, 255)); }
     else { m_game->window().clear(sf::Color(50, 50, 150)); }
+    return;
 
     // set the viewport of the window to be centered on the player if it's far enough right
     auto & pPos = m_player->getComponent<CTransform>().pos;

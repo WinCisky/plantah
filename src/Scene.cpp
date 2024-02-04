@@ -52,7 +52,7 @@ void Scene::drawLine(const Vec2& p1, const Vec2& p2)
 
 void Scene::setPaused(bool paused)
 {
-
+	m_paused = paused;
 }
 
 
