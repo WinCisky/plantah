@@ -45,7 +45,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: ${{ matrix.platform.name }}-${{ matrix.config.name }}-build-bin
-        path: plantah.zip
+        path: build/bin
 
     - name: Archive assets folder
       uses: actions/upload-artifact@v4
