@@ -1,29 +1,14 @@
 #include <SFML/Graphics.hpp>
-#include <SFML/Audio.hpp>
-#include <SFML/Network.hpp>
-#include <SFML/Window.hpp>
-#include <SFML/System.hpp>
+
+#include "GameEngine.h"
+#include <iostream>
 
 int main()
 {
-    auto videoMode = sf::VideoMode(sf::Vector2u(360, 640));
-    sf::VideoMode screen(videoMode);
-    sf::RenderWindow window(screen, "");
-    window.setFramerateLimit(30);
+    std::cout << "Game Over" << std::endl;
+    GameEngine ge = GameEngine("");
+    ge.run();
 
-    while (window.isOpen())
-    {
-        for (sf::Event event; window.pollEvent(event);)
-        {
-            switch (event.type)
-            {
-                case sf::Event::Closed:
-                    window.close();
-                    break;
-            }
-        }
 
-        window.clear();
-        window.display();
-    }
+    return 0;
 }

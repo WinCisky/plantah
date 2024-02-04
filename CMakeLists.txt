@@ -10,7 +10,8 @@ FetchContent_Declare(SFML
     GIT_TAG master)
 FetchContent_MakeAvailable(SFML)
 
-add_executable(plantah src/main.cpp)
+file(GLOB SOURCES "src/*.cpp")
+add_executable(plantah ${SOURCES})
 target_link_libraries(plantah PRIVATE sfml-graphics)
 target_compile_features(plantah PRIVATE cxx_std_17)
 
