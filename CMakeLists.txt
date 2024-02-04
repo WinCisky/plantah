@@ -10,6 +10,8 @@ FetchContent_Declare(SFML
     GIT_TAG master)
 FetchContent_MakeAvailable(SFML)
 
+install(DIRECTORY assets/ DESTINATION bin/assets)
+
 file(GLOB SOURCES "src/*.cpp")
 add_executable(plantah ${SOURCES})
 target_link_libraries(plantah PRIVATE sfml-graphics)
