@@ -42,11 +42,13 @@ jobs:
       run: cmake --install build --config Release
 
     - name: Zip bin folder and assets folder
+      if: runner.os != 'Windows'
       run: |
         cd build/bin && zip -r ../../plantah.zip * && cd ../..
         cd assets && zip -r ../plantah.zip * && cd ..
 
     - name: Zip bin folder and assets folder
+      if: runner.os == 'Windows'
       shell: pwsh
       run: |
         Get-ChildItem -Path build/bin/*, assets/* | Compress-Archive -DestinationPath plantah.zip -CompressionLevel Optimal -Force -FlattenPaths
