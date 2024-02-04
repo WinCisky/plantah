@@ -42,7 +42,14 @@ jobs:
       run: cmake --install build --config Release
 
     - name: Zip bin folder and assets folder
+      if: runner.os != 'Windows'
       run: zip -r plantah.zip build/bin assets
+
+    - name: Zip bin folder and assets folder
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        Compress-Archive -Path build/bin, assets -DestinationPath plantah.zip
 
     - name: Archive build artifacts
       uses: actions/upload-artifact@v4
