@@ -14,7 +14,7 @@ install(DIRECTORY assets/ DESTINATION bin/assets)
 
 file(GLOB SOURCES "src/*.cpp")
 add_executable(plantah ${SOURCES})
-target_link_libraries(plantah PRIVATE sfml-graphics)
+target_link_libraries(plantah PRIVATE sfml-graphics sfml-network)
 target_compile_features(plantah PRIVATE cxx_std_17)
 
 if(WIN32)

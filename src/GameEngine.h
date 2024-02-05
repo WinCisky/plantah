@@ -2,6 +2,7 @@
 
 #include "Scene.h"
 #include "Assets.h"
+#include "NetworkManager.h"
 
 #include <memory>
 
@@ -13,13 +14,16 @@ class GameEngine
 protected:
     sf::RenderWindow m_window;
     Assets m_assets;
+    std::string m_path;
     std::string m_currentScene;
     SceneMap m_sceneMap;
     size_t m_simulationSpeed = 1;
     bool m_running = true;
+    NetworkManager m_networkManager;
 
     void init(const std::string & path);
     void update();
+    void updateNetwork();
 
     void sUserInput();
 
@@ -37,4 +41,6 @@ public:
     sf::RenderWindow & window();
     const Assets& assets() const;
     bool isRunning();
+    void sendNetworkMessage(const std::string & message);
+    std::string getPath() const;
 };

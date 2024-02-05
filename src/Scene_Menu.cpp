@@ -1,9 +1,9 @@
 #include "Scene_Menu.h"
+#include "Scene_Lobby.h"
 #include "GameEngine.h"
 #include "Action.h"
 #include <SFML/Graphics.hpp>
 #include <iostream>
-#include "Scene_Play.h"
 
 Scene_Menu::Scene_Menu(GameEngine * gameEngine) 
     : Scene(gameEngine)
@@ -55,7 +55,7 @@ void Scene_Menu::sDoAction(const Action & action)
         {
             if (m_menuStrings.at(m_selectedMenuIndex) == "Play")
             {
-                m_game->changeScene("GAME", std::make_shared<Scene_Play>(m_game, ""), true);
+                m_game->changeScene("GAME", std::make_shared<Scene_Lobby>(m_game), true);
             }
         }
         else if (action.name() == "QUIT")

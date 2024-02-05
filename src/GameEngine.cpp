@@ -19,6 +19,9 @@ void GameEngine::init(const std::string & path)
     m_window.create(screen, "Definetly not Mario");
     m_window.setFramerateLimit(30);
 
+    std::string address = "planta.opentrust.it";
+    m_networkManager = NetworkManager(address, 8080);
+
     changeScene("MENU", std::make_shared<Scene_Menu>(this));
 }
 
@@ -41,6 +44,7 @@ void GameEngine::run()
 {
     while (isRunning())
     {
+        updateNetwork();
         update();
     }
 }
@@ -118,6 +122,24 @@ void GameEngine::update()
 	sUserInput();
     currentScene()->sRender();
     m_window.display();
+}
+
+void GameEngine::updateNetwork()
+{
+    if (m_networkManager.isConnected())
+    {
+        std::string message = m_networkManager.receive();
+        if (message != "")
+        {
+            std::cout << "Received message: " << message << std::endl;
+            // TODO: let scene handle message
+        }
+    }
+}
+
+void GameEngine::sendNetworkMessage(const std::string & message)
+{
+    m_networkManager.send(message);
 }
 
 const Assets& GameEngine::assets() const
