@@ -24,6 +24,7 @@ protected:
     size_t m_currentFrame = 0;
 
     virtual void onEnd() = 0;
+    virtual void sSend(std::string & message) = 0;
     void setPaused(bool paused);
 
 public:
@@ -35,6 +36,7 @@ public:
     virtual void sDoAction(const Action & action) = 0;
     virtual void sDoActionMouse(const Action & action, const Vec2 & pos) = 0;
     virtual void sRender() = 0;
+    virtual void sReceive(std::string & message) = 0;
 
     virtual void doAction(const Action & action);
     virtual void doActionMouse(const Action & action, const Vec2 & pos);

@@ -10,6 +10,9 @@ typedef std::map<std::string, std::shared_ptr<Scene>> SceneMap;
 
 class GameEngine
 {
+private:
+    const std::string IP = "127.0.0.1";
+    const int PORT = 6666;
 
 protected:
     sf::RenderWindow m_window;
@@ -41,6 +44,6 @@ public:
     sf::RenderWindow & window();
     const Assets& assets() const;
     bool isRunning();
-    void sendNetworkMessage(const std::string & message);
+    void sendNetworkMessage(std::string & message);
     std::string getPath() const;
 };

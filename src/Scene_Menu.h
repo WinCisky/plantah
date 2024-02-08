@@ -23,9 +23,11 @@ protected:
     void onEnd();
     void sDoAction(const Action & action);
     void sDoActionMouse(const Action & action, const Vec2 & pos);
+    void sSend(std::string & message) {};
 
 public:
 
     Scene_Menu(GameEngine * gameEngine = nullptr);
     void sRender();
+    void sReceive(std::string & message) {};
 };

@@ -8,6 +8,7 @@
 Scene_Lobby::Scene_Lobby(GameEngine * gameEngine) 
     : Scene(gameEngine)
     , m_menuText(sf::Text(m_game->assets().getFont("assets/tech.ttf"), "", 20))
+    , m_lobbyText(sf::Text(m_game->assets().getFont("assets/tech.ttf"), "", 10))
 {
     init();
 }
@@ -24,11 +25,15 @@ void Scene_Lobby::init()
 
     m_menuText.setFont(m_game->assets().getFont("assets/tech.ttf"));
     m_menuText.setCharacterSize(20);
+
+    // send play message
+    std::string message = "{\"type\":\"play\"}";
+    sSend(message);
 }
 
 void Scene_Lobby::update() 
 {
-    sRender();
+    m_currentFrame++;
 }
 
 void Scene_Lobby::onEnd() 
@@ -62,6 +67,38 @@ void Scene_Lobby::sRender()
     m_menuText.setFillColor(sf::Color(255, 255, 255));
     m_menuText.setPosition(sf::Vector2f(100, 100));
     m_game->window().draw(m_menuText);
-    
+
+    std::string dots = "";
+    if (m_currentFrame % 30 == 0)
+    {
+        m_dots = (m_dots + 1) % (MAX_DOTS + 1);
+    }
+    for (int i = 0; i < m_dots; i++)
+    {
+        dots += ".";
+    }
+
+    m_lobbyText.setString("Waiting for match" + dots);
+    m_lobbyText.setFillColor(sf::Color(255, 255, 255));
+    m_lobbyText.setPosition(sf::Vector2f(100, 200));
+    m_game->window().draw(m_lobbyText);    
     
 }
+
+void Scene_Lobby::sSend(std::string & message) 
+{
+    m_game->sendNetworkMessage(message);
+};
+
+void Scene_Lobby::sReceive(std::string & message)
+{
+    // do stuff
+    std::cout << "Received message in lobby: " << message << std::endl;
+    // json parse message
+    m_jsonParser.parse(message);
+    std::string type = m_jsonParser.get("type");
+    if (type == "matchFound")
+    {
+        // m_game->changeScene("GAME", std::make_shared<Scene_Play>(m_game), true);
+    }
+};

@@ -6,6 +6,7 @@
 #include <iostream>
 
 GameEngine::GameEngine(const std::string & path)
+    : m_networkManager(NetworkManager(IP, PORT))
 {
     init(path);
 }
@@ -18,9 +19,6 @@ void GameEngine::init(const std::string & path)
     sf::VideoMode screen(videoMode);
     m_window.create(screen, "Definetly not Mario");
     m_window.setFramerateLimit(30);
-
-    std::string address = "planta.opentrust.it";
-    m_networkManager = NetworkManager(address, 8080);
 
     changeScene("MENU", std::make_shared<Scene_Menu>(this));
 }
@@ -60,7 +58,12 @@ void GameEngine::sUserInput()
             {
                 std::cout << "screenshot saved to " << "test.png" << std::endl;
                 sf::Texture texture;
-                texture.create(sf::Vector2u(m_window.getSize().x, m_window.getSize().y));
+                bool isTextureCreated = texture.create(sf::Vector2u(m_window.getSize().x, m_window.getSize().y));
+                if (!isTextureCreated)
+                {
+                    std::cout << "Failed to create texture" << std::endl;
+                    continue;
+                }
                 texture.update(m_window);
                 if (texture.copyToImage().saveToFile("test.png"))
                 {
@@ -120,6 +123,7 @@ void GameEngine::update()
 {
     m_window.clear();
 	sUserInput();
+    currentScene()->update();
     currentScene()->sRender();
     m_window.display();
 }
@@ -128,18 +132,19 @@ void GameEngine::updateNetwork()
 {
     if (m_networkManager.isConnected())
     {
-        std::string message = m_networkManager.receive();
+        std::string message = m_networkManager.sReceive();
         if (message != "")
         {
-            std::cout << "Received message: " << message << std::endl;
-            // TODO: let scene handle message
+            // std::cout << "Received message: " << message << std::endl;
+            // let scene handle message
+            currentScene()->sReceive(message);
         }
     }
 }
 
-void GameEngine::sendNetworkMessage(const std::string & message)
+void GameEngine::sendNetworkMessage(std::string & message)
 {
-    m_networkManager.send(message);
+    m_networkManager.sSend(message);
 }
 
 const Assets& GameEngine::assets() const

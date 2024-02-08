@@ -30,7 +30,7 @@ void Scene_Menu::init()
 
 void Scene_Menu::update() 
 {
-    sRender();
+    m_currentFrame++;
 }
 
 void Scene_Menu::onEnd() 
@@ -55,7 +55,7 @@ void Scene_Menu::sDoAction(const Action & action)
         {
             if (m_menuStrings.at(m_selectedMenuIndex) == "Play")
             {
-                m_game->changeScene("GAME", std::make_shared<Scene_Lobby>(m_game), true);
+                m_game->changeScene("LOBBY", std::make_shared<Scene_Lobby>(m_game), true);
             }
         }
         else if (action.name() == "QUIT")
