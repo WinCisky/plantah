@@ -19,7 +19,7 @@ target_compile_features(plantah PRIVATE cxx_std_17)
 
 if(WIN32)
     target_link_libraries(plantah PRIVATE ws2_32)
-    set_target_properties(plantah PROPERTIES LINK_FLAGS "-static-libgcc -static-libstdc++ -static")
+    target_compile_options(plantah PRIVATE /MT)
     add_custom_command(
         TARGET plantah
         COMMENT "Copy OpenAL DLL"
