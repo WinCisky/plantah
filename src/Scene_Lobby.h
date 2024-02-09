@@ -8,6 +8,10 @@
 #include "EntityManager.h"
 #include "SimpleJsonParser.h"
 
+#ifdef WIN32
+typedef unsigned short u_short;
+#endif
+
 class Scene_Lobby : public Scene
 {
 private:
