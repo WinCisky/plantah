@@ -12,6 +12,7 @@
     #include <ws2tcpip.h>
 #else
     #include <sys/socket.h>
+    #include <netdb.h>
     #include <arpa/inet.h>
     #include <unistd.h>
     #include <fcntl.h>
@@ -160,6 +161,25 @@ NetworkManager::NetworkManager(const std::string& address, int port)
         std::cerr << "Error creating socket\n";
         return;
     }
+
+    // domain to ip windows
+    struct addrinfo *result = NULL;
+    struct addrinfo *ptr = NULL;
+    struct addrinfo hints;
+    ZeroMemory(&hints, sizeof(hints));
+    hints.ai_family = AF_INET;
+    hints.ai_socktype = SOCK_STREAM;
+    hints.ai_protocol = IPPROTO_TCP;
+    if (getaddrinfo(m_address.c_str(), NULL, &hints, &result) != 0) {
+        std::cerr << "Error getting address info\n";
+        return;
+    }
+    for (ptr = result; ptr != NULL; ptr = ptr->ai_next) {
+        struct sockaddr_in *sockaddr_ipv4 = (struct sockaddr_in *) ptr->ai_addr;
+        m_address = inet_ntoa(sockaddr_ipv4->sin_addr);
+        break;
+    }
+    freeaddrinfo(result);
 #else
     // Create a socket
     clientSocket = socket(AF_INET, SOCK_STREAM, 0);
@@ -167,6 +187,17 @@ NetworkManager::NetworkManager(const std::string& address, int port)
         std::cerr << "Error creating socket\n";
         return;
     }
+
+    // domain to ip
+    struct hostent *he;
+    struct in_addr **addr_list;
+    if ((he = gethostbyname(m_address.c_str())) == NULL) {
+        std::cerr << "Error getting host by name\n";
+        return;
+    }
+    addr_list = (struct in_addr **) he->h_addr_list;
+    m_address = inet_ntoa(*addr_list[0]);
+    std::cout << "IP address: " << m_address << std::endl;
 #endif
 
     // Set up server address

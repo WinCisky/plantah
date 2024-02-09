@@ -7,9 +7,6 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 
-const std::string SERVER_IP = "127.0.0.1";
-const int SERVER_PORT = 8080;
-
 class NetworkManager {
     std::string m_address;
     std::string m_incompleteMessage;

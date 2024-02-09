@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "EntityManager.h"
+#include "SimpleJsonParser.h"
 
 class Scene_Play : public Scene
 {
@@ -15,31 +16,18 @@ class Scene_Play : public Scene
     };
     
 public:
-    Scene_Play(GameEngine * gameEngine, const std::string & levelPath);
+    Scene_Play(GameEngine * gameEngine);
+    void sRender();
+    void sReceive(std::string & message);
 
 protected:
 
-    std::shared_ptr<Entity> m_player;
-    std::string m_levelPath;
-    PlayerConfig m_playerConfig;
-    bool m_drawTextures = true;
-    bool m_drawCollisions = false;
-    bool m_drawGrid = false;
-    const Vec2 m_gridSize = { 64, 64 };
-    sf::Text m_gridText;
-
-    void init(const std::string & levelPath);
-    Vec2 gridToMidPixel(float gridX, float gridY, std::shared_ptr<Entity> entity);
-    void loadLevel(const std::string & filename); 
-    void spawnPlayer();
-    void spawnBullet(std::shared_ptr<Entity> entity);
+    SimpleJsonParser m_jsonParser;
+    
+    void init();
     void update();
-    void sMovement();
-    void sLifespan();
-    void sCollision();
+    void onEnd();
     void sDoAction(const Action & action);
     void sDoActionMouse(const Action & action, const Vec2 & pos);
-    void sAnimation();
-    void onEnd();
-    void sRender();
+    void sSend(std::string & message);
 };
