@@ -17,48 +17,108 @@ Scene_Play::Scene_Play(GameEngine * gameEngine)
 
 void Scene_Play::init()
 {
-    registerAction(sf::Keyboard::Key::P, "PAUSE");
     registerAction(sf::Keyboard::Key::Escape, "QUIT");
-    registerAction(sf::Keyboard::Key::T, "TOGGLE_TEXTURE");
-    registerAction(sf::Keyboard::Key::C, "TOGGLE_COLLISION");
-    registerAction(sf::Keyboard::Key::G, "TOGGLE_GRID");
+    registerActionMouse(sf::Mouse::Button::Left, "CLICK");
 
-    // TODO: Register all other fameplay Actions
+    // assign buttons size and position
+    placeButtons();
+    m_buttonSelected = -1;
+}
 
-    // m_gridText.setCharacterSize(12);
-    // m_gridText.setFont(m_game->assets().getFont("assets/tech.ttf"));
+void Scene_Play::placeButtons()
+{
+    auto screenSize = m_game->window().getSize();
+    auto screenQuarters = screenSize / 4u;
+    auto quarterSixth = screenQuarters / 6u;
+    bool isLandscape = screenSize.x > screenSize.y;
 
-    // loadLevel(levelPath);
+    // place first bottom left
+    auto firstButtonSize = isLandscape 
+        ? sf::Vector2f(100, 100) // TODO 
+        : sf::Vector2f(screenQuarters.x, screenQuarters.x);
+    auto firstButtonPos = isLandscape 
+        ? sf::Vector2f(100, 100) // TODO
+        : sf::Vector2f(
+            quarterSixth.x, 
+            screenSize.y - quarterSixth.y - firstButtonSize.x
+        );
+        
+    // place second bottom center
+    auto secondButtonSize = firstButtonSize;
+    auto secondButtonPos = isLandscape
+        ? sf::Vector2f(100, 100) // TODO
+        : sf::Vector2f(
+            (screenSize.x / 2.0) - (secondButtonSize.x / 2.0), 
+            screenSize.y - quarterSixth.y - secondButtonSize.x
+        );
+    // place third bottom right
+    auto thirdButtonSize = firstButtonSize;
+    auto thirdButtonPos = isLandscape
+        ? sf::Vector2f(100, 100) // TODO
+        : sf::Vector2f(
+            screenSize.x - quarterSixth.x - thirdButtonSize.x, 
+            screenSize.y - quarterSixth.y - thirdButtonSize.x
+        );
+
+    auto firstButton = sf::RectangleShape(firstButtonSize);
+    firstButton.setPosition(firstButtonPos);
+    firstButton.setFillColor(sf::Color::Red);
+    firstButton.setOutlineColor(sf::Color::White);
+    m_buttons.insert(std::make_pair("first", firstButton));
+    auto secondButton = sf::RectangleShape(secondButtonSize);
+    secondButton.setPosition(secondButtonPos);
+    secondButton.setFillColor(sf::Color::Green);
+    secondButton.setOutlineColor(sf::Color::White);
+    m_buttons.insert(std::make_pair("second", secondButton));
+    auto thirdButton = sf::RectangleShape(thirdButtonSize);
+    thirdButton.setPosition(thirdButtonPos);
+    thirdButton.setFillColor(sf::Color::Blue);
+    thirdButton.setOutlineColor(sf::Color::White);
+    m_buttons.insert(std::make_pair("third", thirdButton));
 }
 
 void Scene_Play::update()
 {
+    
     m_entityManager.update();
-
-    // TODO: implement pause functionality
-    // sAnimation();
-    // sRender();
 }
 
 void Scene_Play::sDoAction(const Action & action)
 {
-    // if (action.type() == "START")
-    // {
-    //     if (action.name() == "TOGGLE_TEXTURE") { m_drawTextures = !m_drawTextures; }
-    //     else if (action.name() == "TOGGLE_COLLISION") { m_drawCollisions = !m_drawCollisions; }
-    //     else if (action.name() == "TOGGLE_GRID") { m_drawGrid = !m_drawGrid; }
-    //     else if (action.name() == "PAUSE") { setPaused(!m_paused); }
-    //     else if (action.name() == "QUIT") { onEnd(); }
-    // }
-    // else if (action.type() == "END")
-    // {
+    if (action.type() == "START")
+    {
+        if (action.name() == "QUIT") { onEnd(); }
+    }
+    else if (action.type() == "END")
+    {
 
-    // }
+    }
 }
 
 void Scene_Play::sDoActionMouse(const Action & action, const Vec2 & pos)
 {
-
+    if (action.type() == "START")
+    {
+        // check if the mouse is over a button
+        for (auto & button : m_buttons)
+        {
+            if (button.second.getGlobalBounds().contains(sf::Vector2f(pos.x, pos.y)))
+            {
+                if (button.first == "first")
+                {
+                    m_buttonSelected = 0;
+                }
+                else if (button.first == "second")
+                {
+                    m_buttonSelected = 1;
+                }
+                else if (button.first == "third")
+                {
+                    m_buttonSelected = 2;
+                }
+            }
+        }
+    }
 }
 
 void Scene_Play::onEnd()
@@ -77,12 +137,28 @@ void Scene_Play::sRender()
     float windowCenterY = m_game->window().getSize().y / 2.0f;
 
     // TODO: draw buttons
+    for (auto & button : m_buttons)
+    {
+        if (
+            (m_buttonSelected == 0 && button.first == "first")
+            || (m_buttonSelected == 1 && button.first == "second")
+            || (m_buttonSelected == 2 && button.first == "third")
+        )
+        {
+            button.second.setOutlineThickness(2);
+        }
+        else
+        {
+            button.second.setOutlineThickness(0);
+        }
+        m_game->window().draw(button.second);
+    }
 }
 
 void Scene_Play::sReceive(std::string & message)
 {
     // do stuff
-    std::cout << "Received message in lobby: " << message << std::endl;
+    std::cout << "Received message in play: " << message << std::endl;
     // json parse message
     m_jsonParser.parse(message);
     std::string type = m_jsonParser.get("type");

@@ -15,6 +15,11 @@ class Scene_Play : public Scene
         std::string WEAPON;
     };
     
+    int m_buttonSelected;
+    std::map<std::string, sf::RectangleShape> m_buttons;
+
+    void placeButtons();
+    
 public:
     Scene_Play(GameEngine * gameEngine);
     void sRender();

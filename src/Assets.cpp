@@ -8,7 +8,9 @@ Assets::Assets() {
 
 void Assets::addTexture(const std::string& name, const std::string& path)
 {
-	// TODO: implement this
+    sf::Texture texture;
+    texture.loadFromFile(path);
+    m_textures[name] = texture;
 }
 
 void Assets::addAnimation(const std::string& name, const Animation& animation)
@@ -43,4 +45,10 @@ const Animation & Assets::getAnimation(const std::string & name) const {
 void Assets::loadFromFile(const std::string& path)
 {
 	// TODO: implement this
+
+    // load textures
+    for (auto & pair : m_texturePaths)
+    {
+        addTexture(pair.first, pair.second);
+    }
 }

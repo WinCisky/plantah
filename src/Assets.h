@@ -17,6 +17,20 @@ class Assets {
 	AnimationMap m_animations;
 	FontMap      m_fonts;
 
+    const std::map<std::string, std::string> m_texturePaths = {
+        {"water", "assets/prima_grafica/acqua.png"},
+        {"bud", "assets/prima_grafica/chioma.png"},
+        {"cross", "assets/prima_grafica/croce.png"},
+        {"fertilizer", "assets/prima_grafica/fertilizzante.png"},
+        {"lamp", "assets/prima_grafica/lampadina.png"},
+        {"moon", "assets/prima_grafica/luna.png"},
+        {"rain", "assets/prima_grafica/pioggia.png"},
+        {"sun", "assets/prima_grafica/sole.png"},
+        {"skull", "assets/prima_grafica/teschio.png"},
+        {"trinity", "assets/prima_grafica/triforce.png"},
+        {"stem", "assets/prima_grafica/tronco.png"}
+    };
+
 public:
     Assets();
 
