@@ -7,7 +7,8 @@ option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 include(FetchContent)
 FetchContent_Declare(SFML
     GIT_REPOSITORY https://github.com/SFML/SFML.git
-    GIT_TAG master)
+    GIT_TAG master
+    CMAKE_ARGS -DSFML_USE_STATIC_STD_LIBS=TRUE)
 FetchContent_MakeAvailable(SFML)
 
 install(DIRECTORY assets/ DESTINATION bin/assets)
@@ -19,7 +20,7 @@ target_compile_features(plantah PRIVATE cxx_std_17)
 
 if(WIN32)
     target_link_libraries(plantah PRIVATE ws2_32)
-    # target_compile_options(plantah PRIVATE /MT)
+    target_compile_options(plantah PRIVATE /MT)
     add_custom_command(
         TARGET plantah
         COMMENT "Copy OpenAL DLL"
