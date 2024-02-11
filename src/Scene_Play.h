@@ -9,16 +9,26 @@
 
 class Scene_Play : public Scene
 {
-    struct PlayerConfig
+    struct Player
     {
-        float X, Y, CX, CY, SPEED, MAXSPEED, JUMP, GRAVITY;
-        std::string WEAPON;
+        short HEIGHT = 1;
+        std::vector<short> RESOURCES = { 3, 3, 3};
     };
+
+    int m_lobby = -1;
+    short m_weather = -1;
+    std::vector<short> m_choices = { -1, -1, -1};
+    std::vector<Player> m_players;
     
-    int m_buttonSelected;
+    int m_buttonSelected, m_buttonConfirmed;
     std::map<std::string, sf::RectangleShape> m_buttons;
+    sf::Text m_playText;
+
+    sf::Vector2u m_screenSize, m_screenQuarter, m_quarterSixth;
+    bool m_isLandscape; 
 
     void placeButtons();
+    void sendChoice(short index);
     
 public:
     Scene_Play(GameEngine * gameEngine);
