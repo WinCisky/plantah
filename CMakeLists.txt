@@ -4,11 +4,16 @@ project(plantah LANGUAGES CXX)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 
+
+if(WIN32)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static")
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+endif()
+
 include(FetchContent)
 FetchContent_Declare(SFML
     GIT_REPOSITORY https://github.com/SFML/SFML.git
-    GIT_TAG master
-    CMAKE_ARGS -DSFML_USE_STATIC_STD_LIBS=TRUE)
+    GIT_TAG master)
 FetchContent_MakeAvailable(SFML)
 
 install(DIRECTORY assets/ DESTINATION bin/assets)
@@ -20,7 +25,6 @@ target_compile_features(plantah PRIVATE cxx_std_17)
 
 if(WIN32)
     target_link_libraries(plantah PRIVATE ws2_32)
-    target_compile_options(plantah PRIVATE /MT)
     add_custom_command(
         TARGET plantah
         COMMENT "Copy OpenAL DLL"
