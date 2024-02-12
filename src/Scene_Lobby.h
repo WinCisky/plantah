@@ -18,7 +18,7 @@ private:
     const u_short MAX_DOTS = 3;
 protected:
 
-    u_short m_dots;
+    u_short m_dots = 0;
     std::string m_title;
     sf::Text m_menuText;
     sf::Text m_lobbyText; 

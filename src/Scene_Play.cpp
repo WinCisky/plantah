@@ -10,7 +10,7 @@
 
 Scene_Play::Scene_Play(GameEngine * gameEngine)
     : Scene(gameEngine)
-    , m_playText(m_game->assets().getFont("assets/tech.ttf"), "Play", 24)
+    , m_playText(m_game->assets().getFont("assets/tech.ttf"), "Play", 20)
 {
     init();
 }
@@ -197,6 +197,43 @@ void Scene_Play::sRender()
             button.second.setOutlineThickness(2);
         }
         m_game->window().draw(button.second);
+
+        if (button.first == "first")
+        {
+            m_playText.setString(std::to_string(m_choices[0]));
+            // center the text in the button
+            m_playText.setPosition(
+                sf::Vector2f(
+                    button.second.getPosition().x + (button.second.getSize().x / 2.0) - 10,
+                    button.second.getPosition().y + (button.second.getSize().y / 2.0) - 10
+                )
+            );
+            m_game->window().draw(m_playText);
+        }
+        else if (button.first == "second")
+        {
+            m_playText.setString(std::to_string(m_choices[1]));
+            // center the text in the button
+            m_playText.setPosition(
+                sf::Vector2f(
+                    button.second.getPosition().x + (button.second.getSize().x / 2.0) - 10,
+                    button.second.getPosition().y + (button.second.getSize().y / 2.0) - 10
+                )
+            );
+            m_game->window().draw(m_playText);
+        }
+        else if (button.first == "third")
+        {
+            m_playText.setString(std::to_string(m_choices[2]));
+            // center the text in the button
+            m_playText.setPosition(
+                sf::Vector2f(
+                    button.second.getPosition().x + (button.second.getSize().x / 2.0) - 10,
+                    button.second.getPosition().y + (button.second.getSize().y / 2.0) - 10
+                )
+            );
+            m_game->window().draw(m_playText);
+        }
     }
 
     // TODO: draw trees
@@ -230,19 +267,19 @@ void Scene_Play::sRender()
         ? sf::Vector2f(100, 100) // TODO
         : sf::Vector2f(gameplaySize.x + (2 * (resourcesSize.x / 3)), resourcesSize.y - 20);
     
-    m_playText.setString("1");
+    m_playText.setString(std::to_string(m_players[0].HEIGHT));
     m_playText.setPosition(posPlayer1);
     m_game->window().draw(m_playText);
-    m_playText.setString("2");
+    m_playText.setString(std::to_string(m_players[1].HEIGHT));
     m_playText.setPosition(posPlayer2);
     m_game->window().draw(m_playText);
-    m_playText.setString("3");
+    m_playText.setString(std::to_string(m_players[0].RESOURCES[0]));
     m_playText.setPosition(posResource1);
     m_game->window().draw(m_playText);
-    m_playText.setString("4");
+    m_playText.setString(std::to_string(m_players[0].RESOURCES[1]));
     m_playText.setPosition(posResource2);
     m_game->window().draw(m_playText);
-    m_playText.setString("5");
+    m_playText.setString(std::to_string(m_players[0].RESOURCES[2]));
     m_playText.setPosition(posResource3);
     m_game->window().draw(m_playText);
 }

@@ -17,7 +17,7 @@ void GameEngine::init(const std::string & path)
 
     auto videoMode = sf::VideoMode(sf::Vector2u(360, 640));
     sf::VideoMode screen(videoMode);
-    m_window.create(screen, "Definetly not Mario");
+    m_window.create(screen, "Planta");
     m_window.setFramerateLimit(30);
 
     changeScene("MENU", std::make_shared<Scene_Menu>(this));
