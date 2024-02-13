@@ -31,7 +31,7 @@ class Scene_Play : public Scene
     void sendChoice(short index);
     
 public:
-    Scene_Play(GameEngine * gameEngine);
+    Scene_Play(GameEngine * gameEngine, short lobbyId);
     void sRender();
     void sReceive(std::string & message);
 

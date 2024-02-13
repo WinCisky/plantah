@@ -1,6 +1,6 @@
 # TODO
 
-- [ ] send picked option
+- [x] send picked option
 - [ ] read update msg from server
 - [ ] update game status based on server update message
 - [ ] show confirmed choice in green

@@ -8,9 +8,10 @@
 
 #include <iostream>
 
-Scene_Play::Scene_Play(GameEngine * gameEngine)
+Scene_Play::Scene_Play(GameEngine * gameEngine, short lobbyId)
     : Scene(gameEngine)
     , m_playText(m_game->assets().getFont("assets/tech.ttf"), "Play", 20)
+    , m_lobby(lobbyId)
 {
     init();
 }
@@ -109,15 +110,12 @@ void Scene_Play::sendChoice(short index)
         std::cout << choice << " ";
     }
     std::cout << std::endl;
-    return;
+    // return;
     
     // send lobby and choice
-    std::string messageTemplate = "{ \"type\": \"pick\", \"lobby\": %d, \"choice\": %d }";
-    std::string message = std::string(
-        messageTemplate.c_str(), 
-        m_lobby, 
-        m_choices[index]
-    );
+    char buffer[512];
+    sprintf(buffer, "{ \"type\": \"pick\", \"lobby\": %d, \"choice\": %d }", m_lobby, m_choices[index]);
+    std::string message = std::string(buffer);
     sSend(message);
 }
 
@@ -316,13 +314,38 @@ void Scene_Play::sReceive(std::string & message)
     }
     else if (type == "lobbyUpdated")
     {
-        auto playersChoices = m_jsonParser.get("playersChoices");
-        std::cout << "Players choices: " << playersChoices << std::endl;
+        SimpleJsonParser lobbyParser;
+        auto playersChoices = m_jsonParser.getArray("playersChoices");
+        // split the array into individual choices using brackets { ... }, { ... }
+        std::vector<std::string> choices;
+        std::string choice;
+        for (auto & c : playersChoices)
+        {
+            choice += c;
+            if (c == '{')
+            {
+                choice = "";
+            }
+            else if (c == '}')
+            {
+                choices.push_back(choice);
+            }
+        }
+        // for each choice, parse it and get the player id and pick
+        for (auto & c : choices)
+        {
+            lobbyParser.parse(c);
+            std::string playerId = lobbyParser.getNumber("id");
+            std::string playerPick = lobbyParser.getNumber("pick");
+            std::cout << "Player choice: " << playerId << " " << playerPick << std::endl;
+        }
+        // std::cout << "Players choices: " << playersChoices << std::endl;
         // do stuff
     }
 }
 
 void Scene_Play::sSend(std::string & message)
 {
+    // std::cout << "Sending message in play: " << message << std::endl;
     m_game->sendNetworkMessage(message);
 }

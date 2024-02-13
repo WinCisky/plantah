@@ -99,6 +99,9 @@ void Scene_Lobby::sReceive(std::string & message)
     std::string type = m_jsonParser.get("type");
     if (type == "matchFound")
     {
-        m_game->changeScene("GAME", std::make_shared<Scene_Play>(m_game), true);
+        std::string lobbyId = m_jsonParser.getNumber("lobby");
+        std::cout << "Match found in lobby: " << lobbyId << std::endl;
+        short lobby = static_cast<short>(std::stoi(lobbyId));
+        m_game->changeScene("GAME", std::make_shared<Scene_Play>(m_game, lobby), true);
     }
 };
