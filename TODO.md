@@ -3,7 +3,7 @@
 - [x] send picked option
 - [x] read update msg from server
 - [x] update game status based on server update message
-- [ ] show confirmed choice in green
+- [x] show confirmed choice in green
 - [ ] show pick cooldown
 - [ ] show wait cooldown
 - [ ] show pick img over btn

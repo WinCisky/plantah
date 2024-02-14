@@ -35,6 +35,7 @@ protected:
     std::shared_ptr<Scene> currentScene();
 
 public:
+    int playerId = -1;
 
     GameEngine(const std::string & path);
 

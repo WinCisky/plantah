@@ -113,3 +113,16 @@ void Scene_Menu::sRender()
     
     
 }
+
+void Scene_Menu::sReceive(std::string & message) 
+{
+    // parse
+    m_parser.parse(message);
+    std::string type = m_parser.get("type");
+    if (type == "id")
+    {
+        int id = std::stoi(m_parser.getNumber("id"));
+        m_game->playerId = id;
+    }
+    
+}

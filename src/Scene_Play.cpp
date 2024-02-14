@@ -189,9 +189,9 @@ void Scene_Play::sRender()
         }
         // confirmed as green
         if (
-            (m_buttonConfirmed == 0 && button.first == "first")
-            || (m_buttonConfirmed == 1 && button.first == "second")
-            || (m_buttonConfirmed == 2 && button.first == "third")
+            (m_choices[0] == m_buttonConfirmed && button.first == "first")
+            || (m_choices[1] == m_buttonConfirmed && button.first == "second")
+            || (m_choices[2] == m_buttonConfirmed && button.first == "third")
         )
         {
             button.second.setOutlineColor(sf::Color::Green);
@@ -471,6 +471,11 @@ void Scene_Play::sReceive(std::string & message)
             short id = std::stoi(playerId);
             short pick = std::stoi(playerPick);
             playerChoices.push_back({ id, pick });
+
+            if (id == m_game->playerId)
+            {
+                m_buttonConfirmed = pick;
+            }
         }
         updatePlayers(playerChoices);
     }

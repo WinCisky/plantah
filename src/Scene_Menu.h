@@ -6,9 +6,11 @@
 #include <deque>
 
 #include "EntityManager.h"
+#include "SimpleJsonParser.h"
 
 class Scene_Menu : public Scene
 {
+    SimpleJsonParser m_parser;
 
 protected:
 
@@ -29,5 +31,5 @@ public:
 
     Scene_Menu(GameEngine * gameEngine = nullptr);
     void sRender();
-    void sReceive(std::string & message) {};
+    void sReceive(std::string & message);
 };
