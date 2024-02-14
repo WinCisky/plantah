@@ -98,10 +98,20 @@ std::string NetworkManager::composeWebSocketMessage(std::string & message)
 std::string NetworkManager::receiveWebSocketMessage(int clientSocket) {
     std::string msg = "";
     char buffer[1024];
-    ssize_t bytesRead = recv(clientSocket, buffer, sizeof(buffer), 0);
-    if (bytesRead == -1) {
-        // std::cerr << "Error receiving response from server\n" << std::endl;
-        return msg;
+    ssize_t bytesRead;
+
+    if (!m_incompleteMessage.empty()) {
+        for (size_t i = 0; i < m_incompleteMessage.length(); ++i) {
+            buffer[i] = m_incompleteMessage[i];
+        }
+        bytesRead = m_incompleteMessage.length();
+        m_incompleteMessage.clear();
+    } else {
+        bytesRead = recv(clientSocket, buffer, sizeof(buffer), 0);
+        if (bytesRead == -1) {
+            // std::cerr << "Error receiving response from server\n" << std::endl;
+            return msg;
+        }
     }
     buffer[bytesRead] = '\0';
 
@@ -118,15 +128,21 @@ std::string NetworkManager::receiveWebSocketMessage(int clientSocket) {
     // std::cout << "Second byte: " << std::hex << (int)secondByte << std::endl;
 
 
-    // print the rest of the message
-    msg = buffer + 2;
+    std::string substring(buffer + 2, buffer + 2 + secondByte);
 
-    //reset incomplete message if FIN bit is set
-    if (firstByte & 0x80)
+    // //reset incomplete message if FIN bit is set
+    // if (firstByte & 0x80)
+    // {
+    //     m_incompleteMessage = "";
+    // }
+
+    // if there is stuff after the payload
+    if (bytesRead > secondByte + 2)
     {
-        m_incompleteMessage = "";
+        m_incompleteMessage = std::string(buffer + 2 + secondByte, buffer + bytesRead);
     }
-    return msg;
+
+    return substring;
 }
 
 NetworkManager::NetworkManager()

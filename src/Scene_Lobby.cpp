@@ -102,6 +102,23 @@ void Scene_Lobby::sReceive(std::string & message)
         std::string lobbyId = m_jsonParser.getNumber("lobby");
         std::cout << "Match found in lobby: " << lobbyId << std::endl;
         short lobby = static_cast<short>(std::stoi(lobbyId));
-        m_game->changeScene("GAME", std::make_shared<Scene_Play>(m_game, lobby), true);
+        std::string playersArrayString = m_jsonParser.getArray("players");
+        std::string players = playersArrayString.substr(1, playersArrayString.size() - 2);
+        std::vector<int> playersVector;
+        std::string player = "";
+        for (int i = 0; i < players.size(); i++)
+        {
+            if (players[i] == ',')
+            {
+                playersVector.push_back(std::stoi(player));
+                player = "";
+            }
+            else
+            {
+                player += players[i];
+            }
+        }
+        playersVector.push_back(std::stoi(player));
+        m_game->changeScene("GAME", std::make_shared<Scene_Play>(m_game, lobby, playersVector), true);
     }
 };

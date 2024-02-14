@@ -1,8 +1,8 @@
 # TODO
 
 - [x] send picked option
-- [ ] read update msg from server
-- [ ] update game status based on server update message
+- [x] read update msg from server
+- [x] update game status based on server update message
 - [ ] show confirmed choice in green
 - [ ] show pick cooldown
 - [ ] show wait cooldown
@@ -11,3 +11,4 @@
 - [ ] show resources image
 - [ ] show redources as green dots
 - [ ] responsive for desktop
+- [ ] fix network for multiple messages in the same frame

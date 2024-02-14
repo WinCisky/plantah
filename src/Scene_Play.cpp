@@ -8,11 +8,18 @@
 
 #include <iostream>
 
-Scene_Play::Scene_Play(GameEngine * gameEngine, short lobbyId)
+Scene_Play::Scene_Play(GameEngine * gameEngine, short lobbyId, std::vector<int> players)
     : Scene(gameEngine)
     , m_playText(m_game->assets().getFont("assets/tech.ttf"), "Play", 20)
     , m_lobby(lobbyId)
 {
+    for (auto & player : players)
+    {
+        Player p;
+        p.ID = player;
+        m_players.push_back(p);
+    }
+
     init();
 }
 
@@ -30,10 +37,6 @@ void Scene_Play::init()
     placeButtons();
     m_buttonSelected = -1;
     m_buttonConfirmed = -1;
-
-    // create players
-    m_players.push_back(Player());
-    m_players.push_back(Player());
 }
 
 void Scene_Play::placeButtons()
@@ -69,17 +72,17 @@ void Scene_Play::placeButtons()
     auto firstButton = sf::RectangleShape(firstButtonSize);
     firstButton.setPosition(firstButtonPos);
     firstButton.setFillColor(sf::Color::Red);
-    firstButton.setOutlineColor(sf::Color::White);
+    firstButton.setOutlineColor(sf::Color(255, 255, 255));
     m_buttons.insert(std::make_pair("first", firstButton));
     auto secondButton = sf::RectangleShape(secondButtonSize);
     secondButton.setPosition(secondButtonPos);
     secondButton.setFillColor(sf::Color::Green);
-    secondButton.setOutlineColor(sf::Color::White);
+    secondButton.setOutlineColor(sf::Color(255, 255, 255));
     m_buttons.insert(std::make_pair("second", secondButton));
     auto thirdButton = sf::RectangleShape(thirdButtonSize);
     thirdButton.setPosition(thirdButtonPos);
     thirdButton.setFillColor(sf::Color::Blue);
-    thirdButton.setOutlineColor(sf::Color::White);
+    thirdButton.setOutlineColor(sf::Color(255, 255, 255));
     m_buttons.insert(std::make_pair("third", thirdButton));
 }
 
@@ -114,7 +117,7 @@ void Scene_Play::sendChoice(short index)
     
     // send lobby and choice
     char buffer[512];
-    sprintf(buffer, "{ \"type\": \"pick\", \"lobby\": %d, \"choice\": %d }", m_lobby, m_choices[index]);
+    snprintf(buffer, sizeof(buffer), "{ \"type\": \"pick\", \"lobby\": %d, \"choice\": %d }", m_lobby, m_choices[index]);
     std::string message = std::string(buffer);
     sSend(message);
 }
@@ -171,7 +174,7 @@ void Scene_Play::sRender()
     {
         if (m_choices[0] < 0) continue;
         // selected as white
-        button.second.setOutlineColor(sf::Color::White);
+        button.second.setOutlineColor(sf::Color(255, 255, 255));
         if (
             (m_buttonSelected == 0 && button.first == "first")
             || (m_buttonSelected == 1 && button.first == "second")
@@ -282,6 +285,133 @@ void Scene_Play::sRender()
     m_game->window().draw(m_playText);
 }
 
+void Scene_Play::incrementPlayerResource(int playerId, short resource, short increment)
+{
+    if ((m_players[playerId].RESOURCES[resource] + increment) >= MAX_RESOURCES)
+    {
+        m_players[playerId].RESOURCES[resource] = MAX_RESOURCES;
+    }
+    else
+    {
+        m_players[playerId].RESOURCES[resource] += increment;
+    }
+}
+
+void Scene_Play::decrementPlayerResource(int playerId, short resource, short decrement)
+{
+    if ((m_players[playerId].RESOURCES[resource] - decrement) <= 0)
+    {
+        m_players[playerId].RESOURCES[resource] = 0;
+    }
+    else
+    {
+        m_players[playerId].RESOURCES[resource] -= decrement;
+    }
+}
+
+void Scene_Play::updatePlayers(std::vector<PlayerChoice> & choices)
+{
+    for (auto & choice : choices)
+    {
+        int playerIndex = -1;
+        for (int i = 0; i < m_players.size(); i++)
+        {
+            if (m_players[i].ID == choice.m_playerId)
+            {
+                playerIndex = i;
+                break;
+            }
+        }
+        if (playerIndex == -1) { continue; }
+        int randomResource;
+        switch (choice.m_choice)
+        {
+        case 0: // increment resource 1
+            incrementPlayerResource(playerIndex, 0, RESOURCE_INCREMENT);
+            break;
+        case 1: // increment resource 2
+            incrementPlayerResource(playerIndex, 1, RESOURCE_INCREMENT);
+            break;
+        case 2: // increment resource 3
+            incrementPlayerResource(playerIndex, 2, RESOURCE_INCREMENT);
+            break;
+        case 3: // increment trinity
+            incrementPlayerResource(playerIndex, 0, TRINITY_INCREMENT);
+            incrementPlayerResource(playerIndex, 1, TRINITY_INCREMENT);
+            incrementPlayerResource(playerIndex, 2, TRINITY_INCREMENT);
+            break;
+        case 4: // decrement resource 1
+            decrementPlayerResource(playerIndex, 0, RESOURCE_DECREMENT);
+            break;
+        case 5: // decrement resource 2
+            decrementPlayerResource(playerIndex, 1, RESOURCE_DECREMENT);
+            break;
+        case 6: // decrement resource 3
+            decrementPlayerResource(playerIndex, 2, RESOURCE_DECREMENT);
+            break;
+        case 7: // decrement trinity
+            decrementPlayerResource(playerIndex, 0, TRINITY_DECREMENT);
+            decrementPlayerResource(playerIndex, 1, TRINITY_DECREMENT);
+            decrementPlayerResource(playerIndex, 2, TRINITY_DECREMENT);
+            break;
+        }
+
+        // return;
+        // std::cout << "Player " << m_players[playerIndex].ID << " resources: ";
+        // for (auto & resource : m_players[playerIndex].RESOURCES)
+        // {
+        //     std::cout << resource << " ";
+        // }
+        // std::cout << std::endl;
+
+        // weather
+        if (m_weather == "sunny")
+        {
+            incrementPlayerResource(playerIndex, 0, WEATHER_INCREMENT);
+        }
+        else if (m_weather == "rainy")
+        {
+            incrementPlayerResource(playerIndex, 1, WEATHER_INCREMENT);
+        }
+        else if (m_weather == "moon")
+        {
+            incrementPlayerResource(playerIndex, 2, WEATHER_INCREMENT);
+        }
+
+        // growth if all resources are above treshold
+        bool allResourcesAboveTreshold = true;
+        for (auto & resource : m_players[playerIndex].RESOURCES)
+        {
+            if (resource < RESOURCES_TRESHOLD)
+            {
+                allResourcesAboveTreshold = false;
+                break;
+            }
+        }
+        if (allResourcesAboveTreshold)
+        {
+            m_players[playerIndex].HEIGHT += 1;
+        }
+
+        // decrement all resources by 1
+        decrementPlayerResource(playerIndex, 0, GROWTH_DECREMENT);
+        decrementPlayerResource(playerIndex, 1, GROWTH_DECREMENT);
+        decrementPlayerResource(playerIndex, 2, GROWTH_DECREMENT);
+    }
+
+    // prints every user's resources
+    for (auto & player : m_players)
+    {
+        std::cout << "Player " << player.ID << " resources: ";
+        for (auto & resource : player.RESOURCES)
+        {
+            std::cout << resource << " ";
+        }
+        std::cout << std::endl;
+    }
+}
+
+
 void Scene_Play::sReceive(std::string & message)
 {
     std::cout << "Received message in play: " << message << std::endl;
@@ -310,10 +440,11 @@ void Scene_Play::sReceive(std::string & message)
             }
         }
         m_choices[index] = std::stoi(choice);     
-        // do stuff
+        m_weather = m_jsonParser.get("weather");
     }
     else if (type == "lobbyUpdated")
     {
+        std::vector<PlayerChoice> playerChoices;
         SimpleJsonParser lobbyParser;
         auto playersChoices = m_jsonParser.getArray("playersChoices");
         // split the array into individual choices using brackets { ... }, { ... }
@@ -337,10 +468,11 @@ void Scene_Play::sReceive(std::string & message)
             lobbyParser.parse(c);
             std::string playerId = lobbyParser.getNumber("id");
             std::string playerPick = lobbyParser.getNumber("pick");
-            std::cout << "Player choice: " << playerId << " " << playerPick << std::endl;
+            short id = std::stoi(playerId);
+            short pick = std::stoi(playerPick);
+            playerChoices.push_back({ id, pick });
         }
-        // std::cout << "Players choices: " << playersChoices << std::endl;
-        // do stuff
+        updatePlayers(playerChoices);
     }
 }
 
