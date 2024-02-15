@@ -1,5 +1,6 @@
 #include "Scene_Play.h"
 #include "Scene_Menu.h"
+#include "Scene_GameOver.h"
 #include "Physics.h"
 #include "Assets.h"
 #include "GameEngine.h"
@@ -13,11 +14,17 @@ Scene_Play::Scene_Play(GameEngine * gameEngine, short lobbyId, std::vector<int> 
     , m_playText(m_game->assets().getFont("assets/tech.ttf"), "Play", 20)
     , m_lobby(lobbyId)
 {
+    int index = 0;
     for (auto & player : players)
     {
         Player p;
         p.ID = player;
         m_players.push_back(p);
+        if (player == m_game->playerId)
+        {
+            m_playerIndex = index;
+        }
+        index++;
     }
 
     init();
@@ -37,6 +44,10 @@ void Scene_Play::init()
     placeButtons();
     m_buttonSelected = -1;
     m_buttonConfirmed = -1;
+
+    m_timerRectangle = sf::RectangleShape(sf::Vector2f(m_screenSize.x, 3));
+    m_timerRectangle.setPosition(sf::Vector2f(0, m_screenSize.y - 3));
+    m_timerRectangle.setFillColor(sf::Color::Green);
 }
 
 void Scene_Play::placeButtons()
@@ -268,21 +279,33 @@ void Scene_Play::sRender()
         ? sf::Vector2f(100, 100) // TODO
         : sf::Vector2f(gameplaySize.x + (2 * (resourcesSize.x / 3)), resourcesSize.y - 20);
     
-    m_playText.setString(std::to_string(m_players[0].HEIGHT));
+    auto otherPlayer = m_playerIndex == 0 ? 1 : 0;    
+    m_playText.setString(std::to_string(m_players[m_playerIndex].HEIGHT));
     m_playText.setPosition(posPlayer1);
     m_game->window().draw(m_playText);
-    m_playText.setString(std::to_string(m_players[1].HEIGHT));
+    m_playText.setString(std::to_string(m_players[otherPlayer].HEIGHT));
     m_playText.setPosition(posPlayer2);
     m_game->window().draw(m_playText);
-    m_playText.setString(std::to_string(m_players[0].RESOURCES[0]));
+    m_playText.setString(std::to_string(m_players[m_playerIndex].RESOURCES[0]));
     m_playText.setPosition(posResource1);
     m_game->window().draw(m_playText);
-    m_playText.setString(std::to_string(m_players[0].RESOURCES[1]));
+    m_playText.setString(std::to_string(m_players[m_playerIndex].RESOURCES[1]));
     m_playText.setPosition(posResource2);
     m_game->window().draw(m_playText);
-    m_playText.setString(std::to_string(m_players[0].RESOURCES[2]));
+    m_playText.setString(std::to_string(m_players[m_playerIndex].RESOURCES[2]));
     m_playText.setPosition(posResource3);
     m_game->window().draw(m_playText);
+
+    // draw remaining time
+    auto time = m_clock.getElapsedTime();
+    auto remainingTime = 4.8f - time.asSeconds();
+    if (remainingTime < 0)
+    {
+        remainingTime = 0;
+    }
+    
+    m_timerRectangle.setSize(sf::Vector2f((remainingTime / 4.8f) * m_screenSize.x, 3));
+    m_game->window().draw(m_timerRectangle);
 }
 
 void Scene_Play::incrementPlayerResource(int playerId, short resource, short increment)
@@ -419,6 +442,7 @@ void Scene_Play::sReceive(std::string & message)
     std::string type = m_jsonParser.get("type");
     if (type == "choices")
     {
+        m_clock.restart();
         m_buttonSelected = -1;
         m_buttonConfirmed = -1;
         auto choices = m_jsonParser.getArray("choices");
@@ -444,6 +468,7 @@ void Scene_Play::sReceive(std::string & message)
     }
     else if (type == "lobbyUpdated")
     {
+        m_clock.restart();
         std::vector<PlayerChoice> playerChoices;
         SimpleJsonParser lobbyParser;
         auto playersChoices = m_jsonParser.getArray("playersChoices");
@@ -478,6 +503,11 @@ void Scene_Play::sReceive(std::string & message)
             }
         }
         updatePlayers(playerChoices);
+    }
+    else if (type == "endGame")
+    {
+        int winnerId = std::stoi(m_jsonParser.getNumber("winner"));
+        m_game->changeScene("GAMEOVER", std::make_shared<Scene_GameOver>(m_game, winnerId));
     }
 }
 

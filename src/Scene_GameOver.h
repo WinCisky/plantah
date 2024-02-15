@@ -8,28 +8,26 @@
 #include "EntityManager.h"
 #include "SimpleJsonParser.h"
 
-class Scene_Lobby : public Scene
+class Scene_GameOver : public Scene
 {
-private:
-    const int MAX_DOTS = 3;
-protected:
+    const std::string VICTORY = "You won!";
+    const std::string DEFEAT = "You lost!";
 
-    int m_dots = 0;
+    bool m_isWinner;
+protected:
     std::string m_title;
     sf::Text m_menuText;
-    sf::Text m_lobbyText; 
-    SimpleJsonParser m_jsonParser;
 
     void init();
     void update();
     void onEnd();
     void sDoAction(const Action & action);
     void sDoActionMouse(const Action & action, const Vec2 & pos);
-    void sSend(std::string & message);
+    void sSend(std::string & message) {};
 
 public:
 
-    Scene_Lobby(GameEngine * gameEngine = nullptr);
+    Scene_GameOver(GameEngine * gameEngine = nullptr, int winner = -1);
     void sRender();
-    void sReceive(std::string & message);
+    void sReceive(std::string & message) {};
 };

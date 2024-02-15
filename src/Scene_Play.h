@@ -35,6 +35,7 @@ class Scene_Play : public Scene
     const std::vector<std::string> WEATHERS = {"sunny", "rainy", "moon"};
 
     int m_lobby = -1;
+    int m_playerIndex = -1;
     std::string m_weather = "";
     std::vector<short> m_choices = {-1, -1, -1};
     std::vector<Player> m_players;
@@ -42,6 +43,8 @@ class Scene_Play : public Scene
     int m_buttonSelected, m_buttonConfirmed;
     std::map<std::string, sf::RectangleShape> m_buttons;
     sf::Text m_playText;
+    sf::Clock m_clock;
+    sf::RectangleShape m_timerRectangle;
 
     sf::Vector2u m_screenSize, m_screenQuarter, m_quarterSixth;
     bool m_isLandscape; 
