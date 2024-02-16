@@ -1,5 +1,6 @@
 #include "Scene_Menu.h"
 #include "Scene_Lobby.h"
+#include "Scene_GameOver.h"
 #include "GameEngine.h"
 #include "Action.h"
 #include <SFML/Graphics.hpp>
@@ -23,6 +24,7 @@ void Scene_Menu::init()
     registerActionMouse(sf::Mouse::Button::Left, "CLICK");
 
     m_menuStrings.push_back("Play");
+    m_menuStrings.push_back("Test");
 
     m_menuText.setFont(m_game->assets().getFont("assets/tech.ttf"));
     m_menuText.setCharacterSize(20);
@@ -56,6 +58,10 @@ void Scene_Menu::sDoAction(const Action & action)
             if (m_menuStrings.at(m_selectedMenuIndex) == "Play")
             {
                 m_game->changeScene("LOBBY", std::make_shared<Scene_Lobby>(m_game), true);
+            }
+            else if (m_menuStrings.at(m_selectedMenuIndex) == "Test")
+            {
+                m_game->changeScene("GAMEOVER", std::make_shared<Scene_GameOver>(m_game, 0), true);
             }
         }
         else if (action.name() == "QUIT")

@@ -173,9 +173,10 @@ void Scene_Play::onEnd()
 
 void Scene_Play::sRender()
 {
-    // color the background darker so you know that the game is paused
-    if (!m_paused) { m_game->window().clear(sf::Color(100, 100, 255)); }
-    else { m_game->window().clear(sf::Color(50, 50, 150)); }
+    // // color the background darker so you know that the game is paused
+    // if (!m_paused) { m_game->window().clear(sf::Color(100, 100, 255)); }
+    // else { m_game->window().clear(sf::Color(50, 50, 150)); }
+    m_game->window().clear();
 
     float windowCenterX = m_game->window().getSize().x / 2.0f;
     float windowCenterY = m_game->window().getSize().y / 2.0f;

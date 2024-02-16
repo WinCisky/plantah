@@ -12,11 +12,13 @@ class Scene_GameOver : public Scene
 {
     const std::string VICTORY = "You won!";
     const std::string DEFEAT = "You lost!";
+    const std::string CONTINUE = "Continue";
 
     bool m_isWinner;
 protected:
     std::string m_title;
     sf::Text m_menuText;
+    sf::RectangleShape m_buttonContinue;
 
     void init();
     void update();
