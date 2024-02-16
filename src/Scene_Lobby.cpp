@@ -7,8 +7,8 @@
 
 Scene_Lobby::Scene_Lobby(GameEngine * gameEngine) 
     : Scene(gameEngine)
-    , m_menuText(sf::Text(m_game->assets().getFont("assets/tech.ttf"), "", 20))
-    , m_lobbyText(sf::Text(m_game->assets().getFont("assets/tech.ttf"), "", 10))
+    // , m_menuText(sf::Text(m_game->assets().getFont("assets/tech.ttf"), "", 20))
+    // , m_lobbyText(sf::Text(m_game->assets().getFont("assets/tech.ttf"), "", 10))
 {
     init();
 }
@@ -25,6 +25,8 @@ void Scene_Lobby::init()
 
     m_menuText.setFont(m_game->assets().getFont("assets/tech.ttf"));
     m_menuText.setCharacterSize(20);
+    m_lobbyText.setFont(m_game->assets().getFont("assets/tech.ttf"));
+    m_lobbyText.setCharacterSize(10);
 
     // send play message
     std::string message = "{\"type\":\"play\"}";

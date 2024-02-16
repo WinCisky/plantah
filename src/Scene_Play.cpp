@@ -11,7 +11,7 @@
 
 Scene_Play::Scene_Play(GameEngine * gameEngine, short lobbyId, std::vector<int> players)
     : Scene(gameEngine)
-    , m_playText(m_game->assets().getFont("assets/tech.ttf"), "Play", 20)
+    // , m_playText(m_game->assets().getFont("assets/tech.ttf"), "Play", 20)
     , m_lobby(lobbyId)
 {
     int index = 0;
@@ -34,6 +34,9 @@ void Scene_Play::init()
 {
     registerAction(sf::Keyboard::Key::Escape, "QUIT");
     registerActionMouse(sf::Mouse::Button::Left, "CLICK");
+
+    m_playText.setFont(m_game->assets().getFont("assets/tech.ttf"));
+    m_playText.setCharacterSize(20);
 
     m_screenSize = m_game->window().getSize();
     m_screenQuarter = m_screenSize / 4u;

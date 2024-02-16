@@ -5,7 +5,7 @@
 Scene_GameOver::Scene_GameOver(GameEngine * gameEngine, int winner)
     : Scene(gameEngine)
     , m_title("Game Over")
-    , m_menuText(sf::Text(m_game->assets().getFont("assets/tech.ttf"), "", 20))
+    // , m_menuText(sf::Text(m_game->assets().getFont("assets/tech.ttf"), "", 20))
 {
     m_isWinner = winner == m_game->playerId;
 
@@ -15,6 +15,9 @@ Scene_GameOver::Scene_GameOver(GameEngine * gameEngine, int winner)
 void Scene_GameOver::init()
 {
     registerActionMouse(sf::Mouse::Button::Left, "CLICK");
+
+    m_menuText.setFont(m_game->assets().getFont("assets/tech.ttf"));
+    m_menuText.setCharacterSize(20);
 
     auto screen = m_game->window().getSize();
     m_buttonContinue.setSize(sf::Vector2f(100, 50));

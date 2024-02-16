@@ -15,8 +15,7 @@ void GameEngine::init(const std::string & path)
 {
     m_assets.loadFromFile(path);
 
-    auto videoMode = sf::VideoMode(sf::Vector2u(360, 640));
-    sf::VideoMode screen(videoMode);
+    sf::VideoMode screen(360, 640);
     m_window.create(screen, "Planta");
     m_window.setFramerateLimit(30);
 
@@ -58,7 +57,7 @@ void GameEngine::sUserInput()
             {
                 std::cout << "screenshot saved to " << "test.png" << std::endl;
                 sf::Texture texture;
-                bool isTextureCreated = texture.create(sf::Vector2u(m_window.getSize().x, m_window.getSize().y));
+                bool isTextureCreated = texture.create(m_window.getSize().x, m_window.getSize().y);
                 if (!isTextureCreated)
                 {
                     std::cout << "Failed to create texture" << std::endl;

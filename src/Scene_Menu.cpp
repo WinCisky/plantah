@@ -8,7 +8,7 @@
 
 Scene_Menu::Scene_Menu(GameEngine * gameEngine) 
     : Scene(gameEngine)
-    , m_menuText(sf::Text(m_game->assets().getFont("assets/tech.ttf"), "", 20))
+    // , m_menuText(sf::Text(m_game->assets().getFont("assets/tech.ttf"), "", 20))
 {
     init();
 }

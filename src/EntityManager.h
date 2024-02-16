@@ -3,6 +3,7 @@
 #include "Entity.h"
 
 #include <vector>
+#include <memory>
 #include <map>
 
 typedef std::vector<std::shared_ptr<Entity>> EntityVec;
