@@ -11,7 +11,6 @@
 
 Scene_Play::Scene_Play(GameEngine * gameEngine, short lobbyId, std::vector<int> players)
     : Scene(gameEngine)
-    // , m_playText(m_game->assets().getFont("assets/tech.ttf"), "Play", 20)
     , m_lobby(lobbyId)
 {
     int index = 0;

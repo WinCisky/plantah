@@ -5,7 +5,6 @@
 Scene_GameOver::Scene_GameOver(GameEngine * gameEngine, int winner)
     : Scene(gameEngine)
     , m_title("Game Over")
-    // , m_menuText(sf::Text(m_game->assets().getFont("assets/tech.ttf"), "", 20))
 {
     m_isWinner = winner == m_game->playerId;
 
@@ -83,7 +82,8 @@ void Scene_GameOver::sRender()
 
     m_game->window().draw(m_buttonContinue);
     m_menuText.setString(CONTINUE);
-    m_menuText.setOrigin(m_menuText.getGlobalBounds().getSize() / 2.f + m_menuText.getLocalBounds().getPosition());
+    m_menuText.setOrigin(m_menuText.getGlobalBounds().width / 2.f + m_menuText.getLocalBounds().left,
+                         m_menuText.getGlobalBounds().height / 2.f + m_menuText.getLocalBounds().top);
 
     auto textSize = m_menuText.getGlobalBounds();
     m_menuText.setPosition(m_buttonContinue.getPosition() + (m_buttonContinue.getSize() / 2.f));

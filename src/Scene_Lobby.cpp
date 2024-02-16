@@ -7,8 +7,6 @@
 
 Scene_Lobby::Scene_Lobby(GameEngine * gameEngine) 
     : Scene(gameEngine)
-    // , m_menuText(sf::Text(m_game->assets().getFont("assets/tech.ttf"), "", 20))
-    // , m_lobbyText(sf::Text(m_game->assets().getFont("assets/tech.ttf"), "", 10))
 {
     init();
 }
