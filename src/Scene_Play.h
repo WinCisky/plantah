@@ -22,6 +22,17 @@ class Scene_Play : public Scene
         short m_choice;
     };
 
+    const std::map<int, std::string> m_textureAssociation = {
+        {0, "lamp"},
+        {1, "water"},
+        {2, "fertilizer"},
+        {3, "trinity"},
+        {4, "cross"},
+        {5, "cross"},
+        {6, "cross"},
+        {7, "skull"}        
+    };
+
     const short CHOICES = 7;
     const short MAX_RESOURCES = 10;
     const short RESOURCES_TRESHOLD = 7;

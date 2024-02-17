@@ -83,7 +83,15 @@ void Scene_Menu::sDoActionMouse(const Action & action, const Vec2 & pos)
             if (pos.x > firstButtonPos.x && pos.x < firstButtonPos.x + buttonSize.x &&
                 pos.y > firstButtonPos.y + 100 * i && pos.y < firstButtonPos.y + 100 * i + buttonSize.y)
             {
-                std::cout << "Button " << i << " clicked" << std::endl;
+                // std::cout << "Button " << i << " clicked" << std::endl;
+                if (m_menuStrings.at(i) == "Play")
+                {
+                    m_game->changeScene("LOBBY", std::make_shared<Scene_Lobby>(m_game), true);
+                }
+                else if (m_menuStrings.at(i) == "Test")
+                {
+                    m_game->changeScene("GAMEOVER", std::make_shared<Scene_GameOver>(m_game, 0), true);
+                }
             }
         }
     }
@@ -91,28 +99,38 @@ void Scene_Menu::sDoActionMouse(const Action & action, const Vec2 & pos)
 
 void Scene_Menu::sRender() 
 {
-    
     m_menuText.setString(m_title);
-    m_menuText.setFillColor(sf::Color(255, 255, 255));
-    m_menuText.setPosition(sf::Vector2f(100, 100));
+    m_menuText.setOrigin(m_menuText.getGlobalBounds().width / 2.f + m_menuText.getLocalBounds().left,
+                        m_menuText.getGlobalBounds().height / 2.f + m_menuText.getLocalBounds().top);
+    m_menuText.setPosition(m_game->window().getSize().x / 2.f, 100);
     m_game->window().draw(m_menuText);
+
+    // center
+    auto windowSize = m_game->window().getSize();
+    float firstButttonHeight = (m_game->window().getSize().y / 2.f) - 25 - (50 * (m_menuStrings.size() - 1)); 
 
     for (size_t i = 0; i < m_menuStrings.size(); i++)
     {
+        // draw btn rectangle
         sf::RectangleShape rectangle(sf::Vector2f(100, 50));
-        rectangle.setPosition(sf::Vector2f(100, 200 + 100 * i));
-        rectangle.setFillColor(sf::Color(150, 150, 150));
+
+        rectangle.setFillColor(sf::Color(50, 50, 50));
         rectangle.setOutlineThickness(0);
+        rectangle.setOutlineColor(sf::Color(255, 255, 255));
         if (m_selectedMenuIndex == i)
         {
-            rectangle.setOutlineColor(sf::Color(255, 255, 255));
             rectangle.setOutlineThickness(1);
         }
-        m_game->window().draw(rectangle);
+        rectangle.setPosition(sf::Vector2f(windowSize.x / 2.f - 50, firstButttonHeight + 100 * i));
 
+        // set text at center
         m_menuText.setString(m_menuStrings.at(i));
         m_menuText.setFillColor(sf::Color(255, 255, 255));
-        m_menuText.setPosition(sf::Vector2f(100, 200 + 100 * i));
+        m_menuText.setOrigin(m_menuText.getGlobalBounds().width / 2.f + m_menuText.getLocalBounds().left,
+                            m_menuText.getGlobalBounds().height / 2.f + m_menuText.getLocalBounds().top);
+        m_menuText.setPosition(rectangle.getPosition() + (rectangle.getSize() / 2.f));
+
+        m_game->window().draw(rectangle);
         m_game->window().draw(m_menuText);
     }
     

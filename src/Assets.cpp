@@ -4,6 +4,10 @@
 
 Assets::Assets() {
     // Qui potresti caricare i tuoi font e le tue animazioni
+    for (auto & pair : m_texturePaths)
+    {
+        addTexture(pair.first, pair.second);
+    }
 }
 
 void Assets::addTexture(const std::string& name, const std::string& path)

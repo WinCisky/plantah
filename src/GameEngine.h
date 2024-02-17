@@ -11,10 +11,10 @@ typedef std::map<std::string, std::shared_ptr<Scene>> SceneMap;
 class GameEngine
 {
 private:
-    // const std::string IP = "planta.opentrust.it";
-    const std::string IP = "localhost";
-    // const int PORT = 8080;
-    const int PORT = 6666;
+    const std::string IP = "planta.opentrust.it";
+    // const std::string IP = "localhost";
+    const int PORT = 8080;
+    // const int PORT = 6666;
 
 protected:
     sf::RenderWindow m_window;

@@ -85,7 +85,6 @@ void Scene_GameOver::sRender()
     m_menuText.setOrigin(m_menuText.getGlobalBounds().width / 2.f + m_menuText.getLocalBounds().left,
                          m_menuText.getGlobalBounds().height / 2.f + m_menuText.getLocalBounds().top);
 
-    auto textSize = m_menuText.getGlobalBounds();
     m_menuText.setPosition(m_buttonContinue.getPosition() + (m_buttonContinue.getSize() / 2.f));
     m_game->window().draw(m_menuText);
 }

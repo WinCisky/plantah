@@ -84,17 +84,17 @@ void Scene_Play::placeButtons()
 
     auto firstButton = sf::RectangleShape(firstButtonSize);
     firstButton.setPosition(firstButtonPos);
-    firstButton.setFillColor(sf::Color::Red);
+    firstButton.setFillColor(sf::Color(50, 50, 50));
     firstButton.setOutlineColor(sf::Color(255, 255, 255));
     m_buttons.insert(std::make_pair("first", firstButton));
     auto secondButton = sf::RectangleShape(secondButtonSize);
     secondButton.setPosition(secondButtonPos);
-    secondButton.setFillColor(sf::Color::Green);
+    secondButton.setFillColor(sf::Color(50, 50, 50));
     secondButton.setOutlineColor(sf::Color(255, 255, 255));
     m_buttons.insert(std::make_pair("second", secondButton));
     auto thirdButton = sf::RectangleShape(thirdButtonSize);
     thirdButton.setPosition(thirdButtonPos);
-    thirdButton.setFillColor(sf::Color::Blue);
+    thirdButton.setFillColor(sf::Color(50, 50, 50));
     thirdButton.setOutlineColor(sf::Color(255, 255, 255));
     m_buttons.insert(std::make_pair("third", thirdButton));
 }
@@ -213,41 +213,39 @@ void Scene_Play::sRender()
         }
         m_game->window().draw(button.second);
 
+        sf::Sprite sprite;
+
         if (button.first == "first")
         {
-            m_playText.setString(std::to_string(m_choices[0]));
-            // center the text in the button
-            m_playText.setPosition(
-                sf::Vector2f(
-                    button.second.getPosition().x + (button.second.getSize().x / 2.0) - 10,
-                    button.second.getPosition().y + (button.second.getSize().y / 2.0) - 10
-                )
+            // std::cout << "Choice 0: " << m_choices[0] << std::endl;
+            // std::cout << "Texture: " << m_textureAssociation.at(m_choices[0]) << std::endl;
+            sprite.setTexture(m_game->assets().getTexture(m_textureAssociation.at(m_choices[0])));
+            sprite.setPosition(button.second.getPosition());
+            sprite.setScale(
+                button.second.getSize().x / sprite.getGlobalBounds().width,
+                button.second.getSize().y / sprite.getGlobalBounds().height
             );
-            m_game->window().draw(m_playText);
+            m_game->window().draw(sprite);
         }
         else if (button.first == "second")
         {
-            m_playText.setString(std::to_string(m_choices[1]));
-            // center the text in the button
-            m_playText.setPosition(
-                sf::Vector2f(
-                    button.second.getPosition().x + (button.second.getSize().x / 2.0) - 10,
-                    button.second.getPosition().y + (button.second.getSize().y / 2.0) - 10
-                )
+            sprite.setTexture(m_game->assets().getTexture(m_textureAssociation.at(m_choices[1])));
+            sprite.setPosition(button.second.getPosition());
+            sprite.setScale(
+                button.second.getSize().x / sprite.getGlobalBounds().width,
+                button.second.getSize().y / sprite.getGlobalBounds().height
             );
-            m_game->window().draw(m_playText);
+            m_game->window().draw(sprite);
         }
         else if (button.first == "third")
         {
-            m_playText.setString(std::to_string(m_choices[2]));
-            // center the text in the button
-            m_playText.setPosition(
-                sf::Vector2f(
-                    button.second.getPosition().x + (button.second.getSize().x / 2.0) - 10,
-                    button.second.getPosition().y + (button.second.getSize().y / 2.0) - 10
-                )
+            sprite.setTexture(m_game->assets().getTexture(m_textureAssociation.at(m_choices[2])));
+            sprite.setPosition(button.second.getPosition());
+            sprite.setScale(
+                button.second.getSize().x / sprite.getGlobalBounds().width,
+                button.second.getSize().y / sprite.getGlobalBounds().height
             );
-            m_game->window().draw(m_playText);
+            m_game->window().draw(sprite);
         }
     }
 
