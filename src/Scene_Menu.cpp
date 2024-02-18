@@ -144,6 +144,7 @@ void Scene_Menu::sReceive(std::string & message)
     std::string type = m_parser.get("type");
     if (type == "id")
     {
+        // std::cout << "Received id: " << m_parser.getNumber("id") << std::endl;
         int id = std::stoi(m_parser.getNumber("id"));
         m_game->playerId = id;
     }

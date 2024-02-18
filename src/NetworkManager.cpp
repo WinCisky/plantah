@@ -282,6 +282,15 @@ NetworkManager::NetworkManager(const std::string& address, int port)
                 receivedResponse = true;
                 m_connected = true;
             }
+            // check if there is more data
+            std::string bufferStr(buffer);
+            size_t pos = bufferStr.find("\r\n\r\n");
+            if (pos != std::string::npos) {
+                std::string rest = bufferStr.substr(pos + 4);
+                if (rest.length() > 0) {
+                    m_incompleteMessage = rest;
+                }
+            }
         }
     }
 }

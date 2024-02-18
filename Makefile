@@ -1,10 +1,11 @@
 CXX := g++
 OUTPUT := sfmlgame
 
-# SFML_DIR := /usr/local/Cellar/sfml/2.6.1
+# SFML_DIR := /opt/homebrew/Cellar/sfml/2.6.1 # macOS m1
 SFML_DIR := .
 
 CXX_FLAGS := -O3 -std=c++17
+# CXX_FLAGS := -g -O3 -std=c++17 # for debugging
 INCLUDES := -I./src -I$(SFML_DIR)/include
 LDFLAGS := -O3 -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio -L$(SFML_DIR)/lib
 
