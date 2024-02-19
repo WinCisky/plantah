@@ -44,6 +44,11 @@ class Scene_Play : public Scene
     const short WEATHER_INCREMENT = 1;
     const short WINNING_HEIGHT = 5;
     const std::vector<std::string> WEATHERS = {"sunny", "rainy", "moon"};
+    const std::map<std::string, std::string> m_textureWeatherAssociation = {
+        {"sunny", "sun"},
+        {"rainy", "rain"},
+        {"moon", "moon"}
+    };
 
     int m_lobby = -1;
     int m_playerIndex = -1;
@@ -65,6 +70,11 @@ class Scene_Play : public Scene
     void updatePlayers(std::vector<PlayerChoice> & choices);
     void incrementPlayerResource(int playerId, short resource, short increment);
     void decrementPlayerResource(int playerId, short resource, short decrement);
+    void drawButtons();
+    void drawPlayers(sf::Vector2f gamePlaySize);
+    void drawResources(sf::Vector2f resourcesSize) {};
+    void drawCountdown();
+    void drawWeather(sf::Vector2f gamePlaySize);
     
 public:
     Scene_Play(GameEngine * gameEngine, short lobbyId, std::vector<int> players);

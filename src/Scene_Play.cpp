@@ -101,7 +101,6 @@ void Scene_Play::placeButtons()
 
 void Scene_Play::update()
 {
-    
     m_entityManager.update();
 }
 
@@ -119,15 +118,6 @@ void Scene_Play::sDoAction(const Action & action)
 
 void Scene_Play::sendChoice(short index)
 {
-    // show content of m_choices
-    std::cout << "Choices: ";
-    for (auto & choice : m_choices)
-    {
-        std::cout << choice << " ";
-    }
-    std::cout << std::endl;
-    // return;
-    
     // send lobby and choice
     char buffer[512];
     snprintf(buffer, sizeof(buffer), "{ \"type\": \"pick\", \"lobby\": %d, \"choice\": %d }", m_lobby, m_choices[index]);
@@ -169,21 +159,86 @@ void Scene_Play::sDoActionMouse(const Action & action, const Vec2 & pos)
 
 void Scene_Play::onEnd()
 {
-    
     m_game->changeScene("MENU", std::make_shared<Scene_Menu>(m_game));
 }
 
 void Scene_Play::sRender()
 {
-    // // color the background darker so you know that the game is paused
-    // if (!m_paused) { m_game->window().clear(sf::Color(100, 100, 255)); }
-    // else { m_game->window().clear(sf::Color(50, 50, 150)); }
     m_game->window().clear();
 
-    float windowCenterX = m_game->window().getSize().x / 2.0f;
-    float windowCenterY = m_game->window().getSize().y / 2.0f;
+    drawButtons();
 
-    // TODO: draw buttons
+    // TODO: draw resources
+    auto remainingSize = m_isLandscape
+        ? sf::Vector2f(m_screenSize.x, m_screenSize.y) // TODO
+        : sf::Vector2f(m_screenSize.x, m_screenSize.y - (m_screenQuarter.x + (2 * m_quarterSixth.x)));
+    // 70 % to gameplay and 30 % to resources
+    auto gameplaySize = m_isLandscape
+        ? sf::Vector2f(m_screenSize.x, m_screenSize.y) // TODO
+        : sf::Vector2f(remainingSize.x * 0.7, remainingSize.y);
+    auto resourcesSize = m_isLandscape
+        ? sf::Vector2f(m_screenSize.x, m_screenSize.y) // TODO
+        : sf::Vector2f(remainingSize.x * 0.3, remainingSize.y);
+    
+
+    // print trees and resources
+    drawPlayers(gameplaySize);
+    auto posResource1 = m_isLandscape
+        ? sf::Vector2f(100, 100) // TODO
+        : sf::Vector2f(gameplaySize.x, resourcesSize.y - 20);
+    auto posResource2 = m_isLandscape
+        ? sf::Vector2f(100, 100) // TODO
+        : sf::Vector2f(gameplaySize.x + (resourcesSize.x / 3), resourcesSize.y - 20);
+    auto posResource3 = m_isLandscape
+        ? sf::Vector2f(100, 100) // TODO
+        : sf::Vector2f(gameplaySize.x + (2 * (resourcesSize.x / 3)), resourcesSize.y - 20);
+    
+    m_playText.setString(std::to_string(m_players[m_playerIndex].RESOURCES[0]));
+    m_playText.setPosition(posResource1);
+    m_game->window().draw(m_playText);
+    m_playText.setString(std::to_string(m_players[m_playerIndex].RESOURCES[1]));
+    m_playText.setPosition(posResource2);
+    m_game->window().draw(m_playText);
+    m_playText.setString(std::to_string(m_players[m_playerIndex].RESOURCES[2]));
+    m_playText.setPosition(posResource3);
+    m_game->window().draw(m_playText);
+
+    drawWeather(gameplaySize);
+
+    drawCountdown();
+}
+
+void Scene_Play::drawWeather(sf::Vector2f gamePlaySize)
+{
+    if (m_weather == "") { return; }
+    // divide width between players
+    int playerCount = m_players.size();
+    // +1 to leave space and +1 for weather
+    float playerWidth = gamePlaySize.x / (playerCount + 2);
+    // +1 to leave space
+    float plantHeight = gamePlaySize.y / (WINNING_HEIGHT + 1);
+    float paddingWidth = playerWidth / (2 * playerCount);
+    float paddingHeight = plantHeight / 2;
+
+    // draw weather top right
+    auto weatherSize = m_isLandscape
+        ? sf::Vector2f(100, 100) // TODO
+        : sf::Vector2f(plantHeight, plantHeight);
+    auto weatherPos = m_isLandscape
+        ? sf::Vector2f(100, 100) // TODO
+        : sf::Vector2f(gamePlaySize.x - weatherSize.x - paddingWidth, paddingHeight);
+    auto weatherSprite = sf::Sprite();
+    weatherSprite.setTexture(m_game->assets().getTexture(m_textureWeatherAssociation.at(m_weather)));
+    weatherSprite.setPosition(weatherPos);
+    weatherSprite.setScale(
+        weatherSize.x / weatherSprite.getGlobalBounds().width,
+        weatherSize.y / weatherSprite.getGlobalBounds().height
+    );
+    m_game->window().draw(weatherSprite);
+}
+
+void Scene_Play::drawButtons()
+{
     for (auto & button : m_buttons)
     {
         if (m_choices[0] < 0) continue;
@@ -217,8 +272,6 @@ void Scene_Play::sRender()
 
         if (button.first == "first")
         {
-            // std::cout << "Choice 0: " << m_choices[0] << std::endl;
-            // std::cout << "Texture: " << m_textureAssociation.at(m_choices[0]) << std::endl;
             sprite.setTexture(m_game->assets().getTexture(m_textureAssociation.at(m_choices[0])));
             sprite.setPosition(button.second.getPosition());
             sprite.setScale(
@@ -248,55 +301,78 @@ void Scene_Play::sRender()
             m_game->window().draw(sprite);
         }
     }
+}
 
-    // TODO: draw trees
-    // TODO: draw resources
-    auto remainingSize = m_isLandscape
-        ? sf::Vector2f(m_screenSize.x, m_screenSize.y) // TODO
-        : sf::Vector2f(m_screenSize.x, m_screenSize.y - (m_screenQuarter.x + (2 * m_quarterSixth.x)));
-    // 70 % to gameplay and 30 % to resources
-    auto gameplaySize = m_isLandscape
-        ? sf::Vector2f(m_screenSize.x, m_screenSize.y) // TODO
-        : sf::Vector2f(remainingSize.x * 0.7, remainingSize.y);
-    auto resourcesSize = m_isLandscape
-        ? sf::Vector2f(m_screenSize.x, m_screenSize.y) // TODO
-        : sf::Vector2f(remainingSize.x * 0.3, remainingSize.y);
-    
+void Scene_Play::drawPlayers(sf::Vector2f gamePlaySize)
+{
+    // divide width between players
+    int playerCount = m_players.size();
+    // +1 to leave space and +1 for weather
+    float playerWidth = gamePlaySize.x / (playerCount + 2);
+    // +1 to leave space
+    float plantHeight = gamePlaySize.y / (WINNING_HEIGHT + 1);
+    float paddingWidth = playerWidth / (2 * playerCount);
+    float paddingHeight = plantHeight / 2;
 
-    // print trees and resources
-    auto posPlayer1 = m_isLandscape
-        ? sf::Vector2f(100, 100) // TODO
-        : sf::Vector2f(0, gameplaySize.y - 20);
-    auto posPlayer2 = m_isLandscape
-        ? sf::Vector2f(100, 100) // TODO
-        : sf::Vector2f(gameplaySize.x / 2, gameplaySize.y - 20);
-    auto posResource1 = m_isLandscape
-        ? sf::Vector2f(100, 100) // TODO
-        : sf::Vector2f(gameplaySize.x, resourcesSize.y - 20);
-    auto posResource2 = m_isLandscape
-        ? sf::Vector2f(100, 100) // TODO
-        : sf::Vector2f(gameplaySize.x + (resourcesSize.x / 3), resourcesSize.y - 20);
-    auto posResource3 = m_isLandscape
-        ? sf::Vector2f(100, 100) // TODO
-        : sf::Vector2f(gameplaySize.x + (2 * (resourcesSize.x / 3)), resourcesSize.y - 20);
-    
-    auto otherPlayer = m_playerIndex == 0 ? 1 : 0;    
-    m_playText.setString(std::to_string(m_players[m_playerIndex].HEIGHT));
-    m_playText.setPosition(posPlayer1);
-    m_game->window().draw(m_playText);
-    m_playText.setString(std::to_string(m_players[otherPlayer].HEIGHT));
-    m_playText.setPosition(posPlayer2);
-    m_game->window().draw(m_playText);
-    m_playText.setString(std::to_string(m_players[m_playerIndex].RESOURCES[0]));
-    m_playText.setPosition(posResource1);
-    m_game->window().draw(m_playText);
-    m_playText.setString(std::to_string(m_players[m_playerIndex].RESOURCES[1]));
-    m_playText.setPosition(posResource2);
-    m_game->window().draw(m_playText);
-    m_playText.setString(std::to_string(m_players[m_playerIndex].RESOURCES[2]));
-    m_playText.setPosition(posResource3);
-    m_game->window().draw(m_playText);
 
+    // draw rectangle with white outline for the whole game play area
+    sf::RectangleShape rectangle(sf::Vector2f(gamePlaySize.x - (2 * paddingWidth), gamePlaySize.y - (2 * paddingHeight)));
+    rectangle.setPosition(paddingWidth, paddingHeight);
+    rectangle.setFillColor(sf::Color(50, 50, 50, 255));
+    rectangle.setOutlineColor(sf::Color(255, 255, 255));
+    rectangle.setOutlineThickness(1);
+    m_game->window().draw(rectangle);
+    // draw growth rows
+    for (int i = 1; i <= (WINNING_HEIGHT - 1); i++)
+    {
+        sf::RectangleShape row(sf::Vector2f(gamePlaySize.x - (2 * paddingWidth), 1));
+        row.setPosition(paddingWidth, (i * (gamePlaySize.y / (WINNING_HEIGHT + 1))) + paddingHeight);
+        row.setFillColor(sf::Color(255, 255, 255));
+        m_game->window().draw(row);
+    }
+    sf::RectangleShape column(sf::Vector2f(1, gamePlaySize.y - (2 * paddingHeight)));
+    // draw players dividers columns
+    for (int i = 1; i <= playerCount; i++)
+    {
+        column.setPosition((i * playerWidth) + paddingWidth + (2 * i * paddingWidth) + (playerWidth / 2) - (plantHeight / 2), paddingHeight);
+        column.setFillColor(sf::Color(255, 255, 255));
+        m_game->window().draw(column);
+    }
+
+
+    for (int i = 0; i < playerCount; i++)
+    {
+        auto player = m_players[i];
+        auto basePos = m_isLandscape
+            ? sf::Vector2f(100, 100) // TODO
+            : sf::Vector2f((i * playerWidth) + paddingWidth + (2 * i * paddingWidth) + (playerWidth / 2) - (plantHeight / 2), gamePlaySize.y - paddingHeight);
+        
+        // draw the plant
+        sf::Sprite sprite;
+        sprite.setTexture(m_game->assets().getTexture("bud"));
+        sprite.setScale(
+            plantHeight / sprite.getGlobalBounds().width,
+            plantHeight / sprite.getGlobalBounds().height
+        );
+
+        for (int j = 1; j <= player.HEIGHT; j++)
+        {
+            sprite.setPosition(basePos.x, basePos.y - (j * plantHeight));
+            if (j == player.HEIGHT)
+            {
+                sprite.setTexture(m_game->assets().getTexture("bud"));
+            }
+            else
+            {
+                sprite.setTexture(m_game->assets().getTexture("stem"));
+            }
+            m_game->window().draw(sprite);
+        }
+    }
+}
+
+void Scene_Play::drawCountdown()
+{
     // draw remaining time
     auto time = m_clock.getElapsedTime();
     auto remainingTime = 4.8f - time.asSeconds();
@@ -380,14 +456,6 @@ void Scene_Play::updatePlayers(std::vector<PlayerChoice> & choices)
             break;
         }
 
-        // return;
-        // std::cout << "Player " << m_players[playerIndex].ID << " resources: ";
-        // for (auto & resource : m_players[playerIndex].RESOURCES)
-        // {
-        //     std::cout << resource << " ";
-        // }
-        // std::cout << std::endl;
-
         // weather
         if (m_weather == "sunny")
         {
@@ -406,7 +474,7 @@ void Scene_Play::updatePlayers(std::vector<PlayerChoice> & choices)
         bool allResourcesAboveTreshold = true;
         for (auto & resource : m_players[playerIndex].RESOURCES)
         {
-            if (resource < RESOURCES_TRESHOLD)
+            if (resource <= RESOURCES_TRESHOLD)
             {
                 allResourcesAboveTreshold = false;
                 break;
@@ -514,6 +582,5 @@ void Scene_Play::sReceive(std::string & message)
 
 void Scene_Play::sSend(std::string & message)
 {
-    // std::cout << "Sending message in play: " << message << std::endl;
     m_game->sendNetworkMessage(message);
 }

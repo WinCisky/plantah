@@ -1,7 +1,7 @@
 CXX := g++
 OUTPUT := sfmlgame
 
-# SFML_DIR := /opt/homebrew/Cellar/sfml/2.6.1 # macOS m1
+# SFML_DIR := /opt/homebrew/Cellar/sfml/2.6.1
 SFML_DIR := .
 
 CXX_FLAGS := -O3 -std=c++17
