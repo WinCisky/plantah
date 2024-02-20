@@ -72,7 +72,7 @@ class Scene_Play : public Scene
     void decrementPlayerResource(int playerId, short resource, short decrement);
     void drawButtons();
     void drawPlayers(sf::Vector2f gamePlaySize);
-    void drawResources(sf::Vector2f resourcesSize) {};
+    void drawResources(sf::Vector2f resourcesSize, sf::Vector2f gamePlaySize);
     void drawCountdown();
     void drawWeather(sf::Vector2f gamePlaySize);
     

@@ -120,7 +120,13 @@ void Scene_Play::sendChoice(short index)
 {
     // send lobby and choice
     char buffer[512];
-    snprintf(buffer, sizeof(buffer), "{ \"type\": \"pick\", \"lobby\": %d, \"choice\": %d }", m_lobby, m_choices[index]);
+    snprintf(
+        buffer, 
+        sizeof(buffer), 
+        "{ \"type\": \"pick\", \"lobby\": %d, \"choice\": %d }", 
+        m_lobby, 
+        m_choices[index]
+    );
     std::string message = std::string(buffer);
     sSend(message);
 }
@@ -183,28 +189,8 @@ void Scene_Play::sRender()
 
     // print trees and resources
     drawPlayers(gameplaySize);
-    auto posResource1 = m_isLandscape
-        ? sf::Vector2f(100, 100) // TODO
-        : sf::Vector2f(gameplaySize.x, resourcesSize.y - 20);
-    auto posResource2 = m_isLandscape
-        ? sf::Vector2f(100, 100) // TODO
-        : sf::Vector2f(gameplaySize.x + (resourcesSize.x / 3), resourcesSize.y - 20);
-    auto posResource3 = m_isLandscape
-        ? sf::Vector2f(100, 100) // TODO
-        : sf::Vector2f(gameplaySize.x + (2 * (resourcesSize.x / 3)), resourcesSize.y - 20);
-    
-    m_playText.setString(std::to_string(m_players[m_playerIndex].RESOURCES[0]));
-    m_playText.setPosition(posResource1);
-    m_game->window().draw(m_playText);
-    m_playText.setString(std::to_string(m_players[m_playerIndex].RESOURCES[1]));
-    m_playText.setPosition(posResource2);
-    m_game->window().draw(m_playText);
-    m_playText.setString(std::to_string(m_players[m_playerIndex].RESOURCES[2]));
-    m_playText.setPosition(posResource3);
-    m_game->window().draw(m_playText);
-
+    drawResources(resourcesSize, gameplaySize);
     drawWeather(gameplaySize);
-
     drawCountdown();
 }
 
@@ -311,12 +297,15 @@ void Scene_Play::drawPlayers(sf::Vector2f gamePlaySize)
     float playerWidth = gamePlaySize.x / (playerCount + 2);
     // +1 to leave space
     float plantHeight = gamePlaySize.y / (WINNING_HEIGHT + 1);
-    float paddingWidth = playerWidth / (2 * playerCount);
+    float paddingWidth = playerWidth / 2;
     float paddingHeight = plantHeight / 2;
 
 
     // draw rectangle with white outline for the whole game play area
-    sf::RectangleShape rectangle(sf::Vector2f(gamePlaySize.x - (2 * paddingWidth), gamePlaySize.y - (2 * paddingHeight)));
+    sf::RectangleShape rectangle(sf::Vector2f(
+        gamePlaySize.x - (2 * paddingWidth), 
+        gamePlaySize.y - (2 * paddingHeight))
+    );
     rectangle.setPosition(paddingWidth, paddingHeight);
     rectangle.setFillColor(sf::Color(50, 50, 50, 255));
     rectangle.setOutlineColor(sf::Color(255, 255, 255));
@@ -332,9 +321,9 @@ void Scene_Play::drawPlayers(sf::Vector2f gamePlaySize)
     }
     sf::RectangleShape column(sf::Vector2f(1, gamePlaySize.y - (2 * paddingHeight)));
     // draw players dividers columns
-    for (int i = 1; i <= playerCount; i++)
+    for (int i = 1; i <= ((playerCount +1) * 2); i++)
     {
-        column.setPosition((i * playerWidth) + paddingWidth + (2 * i * paddingWidth) + (playerWidth / 2) - (plantHeight / 2), paddingHeight);
+        column.setPosition(i * (playerWidth / 2), paddingHeight);
         column.setFillColor(sf::Color(255, 255, 255));
         m_game->window().draw(column);
     }
@@ -345,7 +334,10 @@ void Scene_Play::drawPlayers(sf::Vector2f gamePlaySize)
         auto player = m_players[i];
         auto basePos = m_isLandscape
             ? sf::Vector2f(100, 100) // TODO
-            : sf::Vector2f((i * playerWidth) + paddingWidth + (2 * i * paddingWidth) + (playerWidth / 2) - (plantHeight / 2), gamePlaySize.y - paddingHeight);
+            : sf::Vector2f(
+                ((i + 1) * playerWidth) - (plantHeight / 2), 
+                gamePlaySize.y - paddingHeight
+            );
         
         // draw the plant
         sf::Sprite sprite;
@@ -368,6 +360,97 @@ void Scene_Play::drawPlayers(sf::Vector2f gamePlaySize)
             }
             m_game->window().draw(sprite);
         }
+    }
+}
+
+void Scene_Play::drawResources(sf::Vector2f resourcesSize, sf::Vector2f gameplaySize) 
+{
+    // +1 to leave space and +1 for icon
+    float resourceHeight = resourcesSize.y / (MAX_RESOURCES + 2);
+    float paddingHeight = resourceHeight / 2;
+    // +1 to leave space
+    float resourceWidth = resourcesSize.x / 4;
+    float paddingWidth = resourceWidth / 2;
+
+    // // draw grid
+    // sf::RectangleShape resourcesArea(sf::Vector2f(
+    //     resourcesSize.x - (2 * paddingWidth), 
+    //     resourcesSize.y - (2* paddingHeight)
+    // ));
+    // resourcesArea.setPosition(gameplaySize.x + paddingWidth, paddingHeight);
+    // resourcesArea.setFillColor(sf::Color(50, 50, 50));
+    // resourcesArea.setOutlineColor(sf::Color(255, 255, 255));
+    // resourcesArea.setOutlineThickness(1);
+    // m_game->window().draw(resourcesArea);
+
+    // min between width and height
+    float circleSize = m_isLandscape
+        ? 100 // TODO
+        : std::min(resourceHeight / 3.14, resourceWidth / 3.14);
+    sf::CircleShape shape(circleSize);
+    for (int i = 0; i < 3; i++)
+    {
+        for (int j = 0; j < MAX_RESOURCES; j++)
+        {
+            auto pos = m_isLandscape
+                ? sf::Vector2f(100, 100) // TODO
+                : sf::Vector2f(
+                    gameplaySize.x + (i * resourceWidth) + resourceWidth - circleSize, 
+                    resourcesSize.y - (j * resourceHeight) - circleSize * 2 - paddingHeight
+                );
+            shape.setPosition(pos);
+            shape.setFillColor(sf::Color(50, 50, 50));
+            if (m_players[m_playerIndex].RESOURCES[i] > j)
+            {
+                shape.setFillColor(sf::Color(255, 255, 255));
+            }
+            shape.setOutlineColor(sf::Color(255, 255, 255));
+            shape.setOutlineThickness(1);
+            m_game->window().draw(shape);
+
+            // // draw grid
+            // sf::RectangleShape row(sf::Vector2f(resourcesSize.x - (2 * paddingWidth), 1));
+            // row.setPosition(
+            //     gameplaySize.x + paddingWidth, 
+            //     resourcesSize.y - ((j * resourceHeight) + paddingHeight)
+            // );
+            // row.setFillColor(sf::Color(255, 255, 255));
+            // m_game->window().draw(row);
+            // row.setPosition(
+            //     gameplaySize.x + paddingWidth, 
+            //     resourcesSize.y - (((j + 1) * resourceHeight) + paddingHeight)
+            // );
+            // row.setFillColor(sf::Color(255, 255, 255));
+            // m_game->window().draw(row);
+
+        }
+        // // draw grid
+        // sf::RectangleShape column(sf::Vector2f(1, resourcesSize.y - (2 * paddingHeight)));
+        // column.setPosition(gameplaySize.x + (i * resourceWidth) + paddingWidth, paddingHeight);
+        // column.setFillColor(sf::Color(255, 255, 255));
+        // m_game->window().draw(column);
+    }
+
+    // draw resources icons
+    auto iconsOrder = std::vector<std::string>{ "lamp", "water", "fertilizer" };
+    auto scaleMultiplier = m_isLandscape ? 1 : 1.5f;
+    auto sizeDiff = m_isLandscape ? 0 : (resourceWidth * scaleMultiplier) - resourceWidth;
+    for (int i = 0; i < 3; i++)
+    {
+        sf::Sprite sprite;
+        sprite.setTexture(m_game->assets().getTexture(iconsOrder[i]));
+        sprite.setScale(
+            (resourceWidth * scaleMultiplier) / sprite.getGlobalBounds().width,
+            (resourceWidth * scaleMultiplier) / sprite.getGlobalBounds().height
+        );
+        sprite.setPosition(m_isLandscape
+            ? sf::Vector2f(100, 100) // TODO
+            : sf::Vector2f(
+                gameplaySize.x + (i * resourceWidth) + paddingWidth - sizeDiff / 2, 
+                paddingHeight + resourceHeight - resourceWidth - sizeDiff / 2
+            )
+        );
+        m_game->window().draw(sprite);
     }
 }
 
